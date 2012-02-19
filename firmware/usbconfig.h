@@ -204,7 +204,7 @@ section at the end of this file).
  * usbFunctionWrite(). Use the global usbCurrentDataToken and a static variable
  * for each control- and out-endpoint to check for duplicate packets.
  */
-#define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   0
+#define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   1
 /* define this macro to 1 if you want the function usbMeasureFrameLength()
  * compiled in. This function can be used to calibrate the AVR's RC oscillator.
  */
@@ -252,8 +252,8 @@ section at the end of this file).
  * obdev's free shared VID/PID pair. See the file USB-IDs-for-free.txt for
  * details.
  */
-#define USB_CFG_DEVICE_NAME     'O', 'p', 'e', 'n', 'Q', 'R', 'S', 'S'
-#define USB_CFG_DEVICE_NAME_LEN 8
+#define USB_CFG_DEVICE_NAME     'O', 'p', 'e', 'n', 'B', 'e', 'a', 'c', 'o', 'n'
+#define USB_CFG_DEVICE_NAME_LEN 10
 /* Same as above for the device name. If you don't want a device name, undefine
  * the macros. See the file USB-IDs-for-free.txt before you assign a name if
  * you use a shared VID/PID.
@@ -377,6 +377,6 @@ section at the end of this file).
 extern void usbEventResetReady(void);
 #endif
 #define USB_RESET_HOOK(isReset)         if(!isReset){usbEventResetReady();}
-#define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   1
+//#define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   1
 
 #endif /* __usbconfig_h_included__ */

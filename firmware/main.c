@@ -34,7 +34,7 @@
 #define KEY_PORT				PORTB
 #define KEY						PB3
 
-#define MSG_BUFFER_SIZE			81			// Message size in characters
+#define MSG_BUFFER_SIZE			41			// Message size in characters
 
 #define DFCW_DEFAULT_OFFSET		100
 
@@ -58,14 +58,15 @@ enum MODE cur_mode;
 enum STATE cur_state, next_state;
 uint32_t cur_state_end;
 static char msg_buffer[MSG_BUFFER_SIZE];
+static char in_buffer[MSG_BUFFER_SIZE];
 char * cur_msg_p;
-uint8_t cur_character = '\0';
+char cur_character = '\0';
 char cur_hell_char = '\0';
 uint8_t cur_hell_col = 0;
 uint8_t cur_hell_row = 0;
 
-static uchar dataReceived = 0; // for CUSTOM_RQ_SET_MSG_1
-static uchar dataLength = 0; // for CUSTOM_RQ_SET_MSG_1
+static uchar currentPosition = 0;
+static uchar bytesRemaining = 0;
 
 // Global variables used in ISRs
 volatile uint32_t timer; // A 32-bit timer will count for 2^32 * 2 ms = ~16 years
@@ -73,9 +74,10 @@ volatile enum BOOL tx_on;
 volatile uint8_t fsk_tune;
 
 // EEPROM variables
+uint8_t EEMEM ee_osc;
 uint8_t	EEMEM ee_mode = DEFAULT_MODE;
 uint16_t EEMEM ee_wpm = DEFAULT_WPM;
-char EEMEM ee_msg_mem_1[MSG_BUFFER_SIZE - 1] = "N0CALL";
+uchar EEMEM ee_msg_mem_1[MSG_BUFFER_SIZE] = "N0CALL";
 
 // Global constants
 //const uint8_t hell_tune[HELL_ROWS] = {0, 42, 84, 126, 169, 210, 252};
@@ -136,46 +138,53 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
     }
     else if(rq->bRequest == CUSTOM_RQ_SET_MSG_1)
     {
-        dataLength = (uchar)rq->wLength.word;
-        dataReceived = 0;
-
-        if(dataLength > sizeof(msg_buffer))
-            dataLength = sizeof(msg_buffer);
-
-        return USB_NO_MSG;
+        currentPosition = 0;                // initialize position index
+        bytesRemaining = rq->wLength.word;  // store the amount of data requested
+        if(bytesRemaining > sizeof(msg_buffer)) // limit to buffer size
+            bytesRemaining = sizeof(msg_buffer);
+        return USB_NO_MSG;        // tell driver to use usbFunctionWrite()
     }
     else if(rq->bRequest == CUSTOM_RQ_GET_MSG_1)
     {
-    	usbMsgPtr = msg_buffer;
-    	return sizeof(msg_buffer);
+    	usbMsgLen_t len = MSG_BUFFER_SIZE;                     // we return up to 64 bytes
+		if(len > rq->wLength.word)          // if the host requests less than we have
+			len = rq->wLength.word;         // return only the amount requested
+		usbMsgPtr = (uchar *)msg_buffer;                 // tell driver where the buffer starts
+		return len;                         // tell driver how many bytes to send
     }
     return 0;   /* default for not implemented requests: return no data back to host */
 }
 
-USB_PUBLIC uchar usbFunctionWrite(uchar *data, uchar len)
+uchar usbFunctionWrite(uchar *data, uchar len)
 {
 	uchar i;
 
-	memset(msg_buffer, '\0', MSG_BUFFER_SIZE);
+    if(len > bytesRemaining)                // if this is the last incomplete chunk
+        len = bytesRemaining;               // limit to the amount we can store
+    bytesRemaining -= len;
+    for(i = 0; i < len; i++)
+        msg_buffer[currentPosition++] = data[i];
 
-	for(i = 0; dataReceived < dataLength && i < len; i++, dataReceived++)
-		msg_buffer[dataReceived] = data[i];
+    if(bytesRemaining == 0)
+    {
+		// Update EEPROM with new message
+		//eeprom_busy_wait();
+    	//strcpy(msg_buffer, in_buffer);
+		eeprom_write_block((const void*)&msg_buffer, (void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
 
-	// Update EEPROM with new message
-	eeprom_update_block((const void*)&msg_buffer, (void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+		// Reset message buffer
+		cur_msg_p = msg_buffer;
+		cur_character = '\0';
 
-    // Reset message buffer
-    cur_msg_p = msg_buffer;
-	cur_character = '\0';
+		// Reset Hell index
+		cur_hell_row = 0;
+		cur_hell_col = 0;
 
-	// Reset Hell index
-    cur_hell_row = 0;
-    cur_hell_col = 0;
+		// Put back in IDLE state
+		cur_state = STATE_IDLE;
+    }
 
-    // Put back in IDLE state
-    cur_state = STATE_IDLE;
-
-	return (dataReceived == dataLength);
+    return bytesRemaining == 0;             // return 1 if we have all data
 }
 
 static void calibrateOscillator(void)
@@ -213,7 +222,7 @@ void usbEventResetReady(void)
     cli();  // usbMeasureFrameLength() counts CPU cycles, so disable interrupts.
     calibrateOscillator();
     sei();
-    eeprom_write_byte(0, OSCCAL);   // store the calibrated value in EEPROM
+    eeprom_write_byte(&ee_osc, OSCCAL);   // store the calibrated value in EEPROM
 }
 
 void set_wpm(uint16_t new_wpm)
@@ -238,7 +247,7 @@ int main(void)
 	//-------------------------------------------------------------------------------------------
 
 	// Load the osc calibration value
-	calibrationValue = eeprom_read_byte(0); /* calibration value from last time */
+	calibrationValue = eeprom_read_byte(&ee_osc); /* calibration value from last time */
 	if(calibrationValue != 0xff){
 		OSCCAL = calibrationValue;
 	}
@@ -261,7 +270,7 @@ int main(void)
 		_delay_ms(1);
 	}
 	usbDeviceConnect();
-	sei();
+
 
 	//-------------------------------------------------------------------------------------------
 	// OpenQRSS init
@@ -270,7 +279,7 @@ int main(void)
 	// Set up Timer0 for event timer
 	// 16.5 MHz clock, /256 prescale, 129 count = 2.0014 ms
 	// We'll consider it 2 ms for our purposes
-	TCCR0A = _BV(WGM01); // CTC mode
+	TCCR0A |= _BV(WGM01); // CTC mode
 	TCCR0B = _BV(CS02); // Prescale /256
 	OCR0A = 128;
 	TIMSK |= _BV(OCIE0A); // Enable CTC interrupt
@@ -295,7 +304,6 @@ int main(void)
 	KEY_PORT |= _BV(KEY);
 
 	// Set up the message buffer
-	//msg_buffer = malloc(MSG_BUFFER_SIZE);
 	memset(msg_buffer, '\0', MSG_BUFFER_SIZE);
 	cur_msg_p = msg_buffer;
 
@@ -306,6 +314,8 @@ int main(void)
 	//set_wpm(40);
 	eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
 	//strcpy(msg_buffer, "NT7S CN85");
+
+	sei();
 
 
 	while(1)

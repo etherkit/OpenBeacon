@@ -10,6 +10,8 @@
 #include <string.h>
 #include <usb.h>    /* this is libusb, see http://libusb.sourceforge.net/ */
 
+#define OPENBEACON_CLIENT			1
+
 #include "../firmware/modes.h"
 #include "../firmware/requests.h"
 
@@ -128,7 +130,7 @@ static int          didUsbInit = 0;
 int main(int argc, char **argv)
 {
 usb_dev_handle      *handle = NULL;
-unsigned char       buffer[8];
+unsigned char       buffer[81];
 int                 nBytes;
 
     if(argc < 2){
@@ -136,8 +138,8 @@ int                 nBytes;
         exit(1);
     }
     usb_init();
-    if(usbOpenDevice(&handle, USBDEV_SHARED_VENDOR, "Etherkit", USBDEV_SHARED_PRODUCT, "OpenQRSS") != 0){
-        fprintf(stderr, "Could not find USB device \"OpenQRSS\" with vid=0x%x pid=0x%x\n", USBDEV_SHARED_VENDOR, USBDEV_SHARED_PRODUCT);
+    if(usbOpenDevice(&handle, USBDEV_SHARED_VENDOR, "Etherkit", USBDEV_SHARED_PRODUCT, "OpenBeacon") != 0){
+        fprintf(stderr, "Could not find USB device \"OpenBeacon\" with vid=0x%x pid=0x%x\n", USBDEV_SHARED_VENDOR, USBDEV_SHARED_PRODUCT);
         exit(1);
     }
 /* We have searched all devices on all busses for our USB device above. Now
@@ -146,20 +148,11 @@ int                 nBytes;
  */
     if(strcmp(argv[1], "status") == 0)
     {
-        //int i;
         nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_MODE, 0, 0, (char *)buffer, sizeof(buffer), 5000);
-        /*
-        if(nBytes < 2){
-            if(nBytes < 0)
-                fprintf(stderr, "USB error: %s\n", usb_strerror());
-            fprintf(stderr, "only %d bytes status received\n", nBytes);
-            exit(1);
-        }
-        */
         printf("Mode: %s -- %s\n", mode_list[buffer[0]], mode_desc[buffer[0]]);
 
         nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_MSG_1, 0, 0, (char *)buffer, sizeof(buffer), 5000);
-        printf("Message 1: %s\n", buffer);
+        printf("Message Buffer 1: %s\n", buffer);
     }
     else if(strcmp(argv[1], "modelist") == 0)
     {
@@ -201,6 +194,7 @@ int                 nBytes;
         else if(strcmp(argv[1], "msg1") == 0)
         {
         	nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_MSG_1, 0, 0, argv[2], strlen(argv[2])+1, 5000);
+        	printf("Message Buffer 1: %s\n", argv[2]);
         }
         else
         {

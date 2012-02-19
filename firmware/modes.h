@@ -8,12 +8,17 @@
 #ifndef MODES_H_
 #define MODES_H_
 
+#include <stdint.h>
+
 #define MODE_COUNT			10
 
 enum MODE {MODE_DFCW3, MODE_DFCW6, MODE_DFCW10, MODE_QRSS3, MODE_QRSS6, MODE_QRSS10, MODE_CW5, MODE_CW13, MODE_HELL, MODE_CAL};
 
+#if OPENBEACON_CLIENT
+
 // Array of mode names, indexed to enum MODE
 const char mode_list[MODE_COUNT][10] = {"dfcw3", "dfcw6", "dfcw10", "qrss3", "qrss6", "qrss10", "cw5", "cw13", "hell", "cal"};
+
 
 const char mode_desc[MODE_COUNT][100] =	   {"Dual Frequency CW - 3 second dits",
 											"Dual Frequency CW - 6 second dits",
@@ -25,6 +30,7 @@ const char mode_desc[MODE_COUNT][100] =	   {"Dual Frequency CW - 3 second dits",
 											"CW - 13 WPM",
 											"Feld Hell",
 											"Calibration"};
+#endif
 
 // Array of speeds for the modes, indexed to enum MODE
 // Speeds are in WPM * 100
