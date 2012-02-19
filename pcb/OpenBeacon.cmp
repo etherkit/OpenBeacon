@@ -1,0 +1,528 @@
+Cmp-Mod V01 Genere par PcbNew le Wed 01 Feb 2012 08:52:49 PM PST
+
+BeginCmp
+TimeStamp = /4F21B123;
+Reference = C1;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F21B128;
+Reference = C2;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C9E49;
+Reference = C3;
+ValeurCmp = CTRIM;
+IdModule  = TRIMCAP-MURATA;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C9E7F;
+Reference = C4;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C9C9C;
+Reference = C5;
+ValeurCmp = CTRIM;
+IdModule  = TRIMCAP-MURATA;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C9E9A;
+Reference = C6;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA444;
+Reference = C7;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA448;
+Reference = C8;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F21B134;
+Reference = C9;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F21B12D;
+Reference = C10;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA466;
+Reference = C11;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA46B;
+Reference = C12;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F21B137;
+Reference = C13;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9B1;
+Reference = C14;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9B8;
+Reference = C15;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CAA0E;
+Reference = C16;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB06F;
+Reference = C17;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB044;
+Reference = C18;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB046;
+Reference = C19;
+ValeurCmp = 100n;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB050;
+Reference = C20;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB68B;
+Reference = C21;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB054;
+Reference = C22;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB691;
+Reference = C23;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB059;
+Reference = C24;
+ValeurCmp = C;
+IdModule  = CAPACITOR2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C9EA4;
+Reference = D1;
+ValeurCmp = Red;
+IdModule  = LED-5MM-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BDD;
+Reference = D2;
+ValeurCmp = Green;
+IdModule  = LED-5MM-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205C91;
+Reference = D3;
+ValeurCmp = 3.6V;
+IdModule  = DIODE3;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20D582;
+Reference = D4;
+ValeurCmp = 1N5817;
+IdModule  = DIODE4;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205C98;
+Reference = D5;
+ValeurCmp = 3.6V;
+IdModule  = DIODE3;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20D58A;
+Reference = D6;
+ValeurCmp = 1N5817;
+IdModule  = DIODE4;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB039;
+Reference = D7;
+ValeurCmp = Red;
+IdModule  = LED-5MM-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20D59A;
+Reference = D8;
+ValeurCmp = 1N5817;
+IdModule  = DIODE4;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20D5A1;
+Reference = D9;
+ValeurCmp = 1N5817;
+IdModule  = DIODE4;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F27A980;
+Reference = J1;
+ValeurCmp = +12VDC;
+IdModule  = DCPOWER-KOBICONN-163-7620-E;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BAB;
+Reference = J2;
+ValeurCmp = USB_2;
+IdModule  = USB-B-MICRO-FCI;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20D623;
+Reference = J3;
+ValeurCmp = AVR-ISP-6;
+IdModule  = AVR-ISP-6-TH;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB715;
+Reference = J4;
+ValeurCmp = BNC;
+IdModule  = BNC-AMPHENOL-31-5431-10RFX;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C984D;
+Reference = L1;
+ValeurCmp = L;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA99B;
+Reference = L2;
+ValeurCmp = 10u;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB2D7;
+Reference = L3;
+ValeurCmp = L-IRONCORE;
+IdModule  = T37-V;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB2E0;
+Reference = L4;
+ValeurCmp = L-IRONCORE;
+IdModule  = T37-V;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA5A9;
+Reference = Q1;
+ValeurCmp = 2N4401;
+IdModule  = TO-92-EBC-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA964;
+Reference = Q2;
+ValeurCmp = 2N4401;
+IdModule  = TO-92-EBC-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9E6;
+Reference = Q3;
+ValeurCmp = BD139;
+IdModule  = TO-126;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB067;
+Reference = Q4;
+ValeurCmp = 2N4403;
+IdModule  = TO-92-EBC-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB2BC;
+Reference = Q5;
+ValeurCmp = 2N7000;
+IdModule  = TO-92-EBC-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BFF;
+Reference = R1;
+ValeurCmp = 100k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BFB;
+Reference = R2;
+ValeurCmp = 100k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BF3;
+Reference = R3;
+ValeurCmp = 100k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205BEC;
+Reference = R4;
+ValeurCmp = 330;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA42E;
+Reference = R5;
+ValeurCmp = 10k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA439;
+Reference = R6;
+ValeurCmp = 10k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA45D;
+Reference = R7;
+ValeurCmp = 47;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA461;
+Reference = R8;
+ValeurCmp = 1k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA98B;
+Reference = R9;
+ValeurCmp = 10k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205C20;
+Reference = R10;
+ValeurCmp = 68;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205C27;
+Reference = R11;
+ValeurCmp = 68;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA974;
+Reference = R12;
+ValeurCmp = 10k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9AC;
+Reference = R13;
+ValeurCmp = 47;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9A9;
+Reference = R14;
+ValeurCmp = 100;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205CB5;
+Reference = R15;
+ValeurCmp = 1.5k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9E1;
+Reference = R16;
+ValeurCmp = 1k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9D9;
+Reference = R17;
+ValeurCmp = 2.2k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB033;
+Reference = R18;
+ValeurCmp = 1k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9ED;
+Reference = R19;
+ValeurCmp = 33;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CA9FA;
+Reference = R20;
+ValeurCmp = 470;
+IdModule  = TRIMPOT-3319;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB02D;
+Reference = R21;
+ValeurCmp = 10;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB07B;
+Reference = R22;
+ValeurCmp = 22k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB083;
+Reference = R23;
+ValeurCmp = 22k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CB2CA;
+Reference = R24;
+ValeurCmp = 100k;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F221FEC;
+Reference = S1;
+ValeurCmp = PUSHBUTTON;
+IdModule  = PUSHBUTTON-1571010-1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1CAFE9;
+Reference = T1;
+ValeurCmp = FT37-43_BIFILAR;
+IdModule  = T37-V-BIFILAR;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F205B73;
+Reference = U1;
+ValeurCmp = ATTINY85;
+IdModule  = DIP-8__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F20DBE8;
+Reference = U2;
+ValeurCmp = 750L05;
+IdModule  = TO-92-EBC-NT7S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F1C979B;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = HC-49;
+EndCmp
+
+EndListe

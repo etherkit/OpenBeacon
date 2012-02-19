@@ -1,0 +1,81 @@
+eeschema (2011-nov-30)-testing  >> Creation date: Sat 18 Feb 2012 01:02:58 PM PST
+
+#Cmp ( order = Value )
+| +12VDC       J1        
+| 1.5k         R15       
+| 10           R21       
+| 100          R14       
+| 100k         R1        
+| 100k         R2        
+| 100k         R3        
+| 100k         R24       
+| 100n         C1        
+| 100n         C2        
+| 100n         C9        
+| 100n         C10       
+| 100n         C11       
+| 100n         C12       
+| 100n         C13       
+| 100n         C14       
+| 100n         C15       
+| 100n         C16       
+| 100n         C17       
+| 100n         C18       
+| 100n         C19       
+| 10k          R5        
+| 10k          R6        
+| 10k          R9        
+| 10k          R12       
+| 10u          L2        
+| 1k           R8        
+| 1k           R16       
+| 1k           R18       
+| 1N5817       D4        
+| 1N5817       D6        
+| 1N5817       D8        
+| 1N5817       D9        
+| 2.2k         R17       
+| 22k          R22       
+| 22k          R23       
+| 2N4401       Q1        
+| 2N4401       Q2        
+| 2N4403       Q4        
+| 2N7000       Q5        
+| 3.6V         D3        
+| 3.6V         D5        
+| 33           R19       
+| 330          R4        
+| 47           R7        
+| 47           R13       
+| 470          R20       
+| 68           R10       
+| 68           R11       
+| 78L05        U2        
+| Ant          J4        
+| ATTINY85     U1        
+| AVR-ISP-6    J3        
+| BD139-16     Q3        
+| C            C4        
+| C            C6        
+| C            C7        
+| C            C8        
+| C            C20       
+| C            C21       
+| C            C22       
+| C            C23       
+| C            C24       
+| CRYSTAL      X1        
+| CTRIM        C3        
+| CTRIM        C5        
+| FT37-43 BIFILAR T1        
+| Green        D2        
+| L            L1        
+| L-IRONCORE   L3        
+| L-IRONCORE   L4        
+| PUSHBUTTON   S1        
+| Red          D1        
+| Red          D7        
+| USB_2        J2        
+#End Cmp
+
+#End List
