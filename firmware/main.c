@@ -58,12 +58,12 @@ enum MODE cur_mode;
 enum STATE cur_state, next_state;
 uint32_t cur_state_end;
 static char msg_buffer[MSG_BUFFER_SIZE];
-static char in_buffer[MSG_BUFFER_SIZE];
 char * cur_msg_p;
 char cur_character = '\0';
 char cur_hell_char = '\0';
 uint8_t cur_hell_col = 0;
 uint8_t cur_hell_row = 0;
+uint16_t wpm;
 
 static uchar currentPosition = 0;
 static uchar bytesRemaining = 0;
@@ -124,11 +124,14 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
         cur_hell_col = 0;
 
         // Reset WPM
-        set_wpm(dit_speed[cur_mode]);
-        eeprom_write_word(&ee_wpm, dit_speed[cur_mode]);
+        wpm = dit_speed[cur_mode];
+        set_wpm(wpm);
+        eeprom_write_word(&ee_wpm, wpm);
 
         // Put back in IDLE state
         cur_state = STATE_IDLE;
+
+        return 0;
     }
     else if(rq->bRequest == CUSTOM_RQ_GET_MODE)
     {
@@ -152,6 +155,18 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 		usbMsgPtr = (uchar *)msg_buffer;                 // tell driver where the buffer starts
 		return len;                         // tell driver how many bytes to send
     }
+    else if(rq->bRequest == CUSTOM_RQ_SET_WPM)
+    {
+    	wpm = rq->wValue.bytes[0] * 100;
+    	set_wpm(wpm);
+    	eeprom_write_word(&ee_wpm, wpm);
+    }
+    else if(rq->bRequest == CUSTOM_RQ_GET_WPM)
+    {
+        dataBuffer[0] = (uchar)(wpm / 100);
+        usbMsgPtr = dataBuffer;         /* tell the driver which data to return */
+        return 1;                       /* tell the driver to send 1 byte */
+    }
     return 0;   /* default for not implemented requests: return no data back to host */
 }
 
@@ -168,8 +183,6 @@ uchar usbFunctionWrite(uchar *data, uchar len)
     if(bytesRemaining == 0)
     {
 		// Update EEPROM with new message
-		//eeprom_busy_wait();
-    	//strcpy(msg_buffer, in_buffer);
 		eeprom_write_block((const void*)&msg_buffer, (void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
 
 		// Reset message buffer
@@ -310,10 +323,9 @@ int main(void)
 	// Initialize states
 	cur_mode = eeprom_read_byte(&ee_mode);
 	cur_state = STATE_IDLE;
-	set_wpm(eeprom_read_word(&ee_wpm));
-	//set_wpm(40);
+	wpm = eeprom_read_word(&ee_wpm);
+	set_wpm(wpm);
 	eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
-	//strcpy(msg_buffer, "NT7S CN85");
 
 	sei();
 
@@ -334,8 +346,7 @@ int main(void)
 		case MODE_QRSS3:
 		case MODE_QRSS6:
 		case MODE_QRSS10:
-		case MODE_CW5:
-		case MODE_CW13:
+		case MODE_CW:
 			switch(cur_state)
 			{
 			case STATE_IDLE:
@@ -421,8 +432,7 @@ int main(void)
 				case MODE_QRSS3:
 				case MODE_QRSS6:
 				case MODE_QRSS10:
-				case MODE_CW5:
-				case MODE_CW13:
+				case MODE_CW:
 					// Transmitter on
 					KEY_PORT |= _BV(KEY);
 
@@ -449,8 +459,7 @@ int main(void)
 					case MODE_QRSS3:
 					case MODE_QRSS6:
 					case MODE_QRSS10:
-					case MODE_CW5:
-					case MODE_CW13:
+					case MODE_CW:
 						// Transmitter off
 						KEY_PORT &= ~(_BV(KEY));
 
@@ -580,6 +589,7 @@ int main(void)
 			switch(cur_state)
 			{
 			case STATE_IDLE:
+				KEY_PORT &= ~(_BV(KEY));
 				cur_hell_row++;
 				if(cur_hell_row > HELL_ROWS)
 					cur_hell_row = 0;
@@ -588,6 +598,7 @@ int main(void)
 				cur_state = STATE_CAL;
 				break;
 			case STATE_CAL:
+				KEY_PORT |= _BV(KEY);
 				OCR1B = hell_tune[cur_hell_row];
 
 				if(cur_timer > cur_state_end)

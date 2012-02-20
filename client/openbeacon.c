@@ -30,6 +30,8 @@ static void usage(char *name)
     fprintf(stderr, "      List all available mode names and their descriptions\n\n");
     fprintf(stderr, "  %s mode <modename>\n", name);
     fprintf(stderr, "      Change the operating mode to <modename>\n\n");
+    fprintf(stderr, "  %s wpm <speed>\n", name);
+    fprintf(stderr, "      Change the keying speed to <speed> (only in CW mode)\n\n");
     fprintf(stderr, "  %s msg1 <buffer>\n", name);
     fprintf(stderr, "      Change Message Buffer 1 to <buffer> (enclose in quotation marks)\n\n");
 }
@@ -151,6 +153,12 @@ int                 nBytes;
         nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_MODE, 0, 0, (char *)buffer, sizeof(buffer), 5000);
         printf("Mode: %s -- %s\n", mode_list[buffer[0]], mode_desc[buffer[0]]);
 
+        if(strcmp(mode_list[buffer[0]], "cw") == 0)
+        {
+			nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_WPM, 0, 0, (char *)buffer, sizeof(buffer), 5000);
+			printf("WPM: %d\n", buffer[0]);
+        }
+
         nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, CUSTOM_RQ_GET_MSG_1, 0, 0, (char *)buffer, sizeof(buffer), 5000);
         printf("Message Buffer 1: %s\n", buffer);
     }
@@ -195,6 +203,12 @@ int                 nBytes;
         {
         	nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_MSG_1, 0, 0, argv[2], strlen(argv[2])+1, 5000);
         	printf("Message Buffer 1: %s\n", argv[2]);
+        }
+        else if(strcmp(argv[1], "wpm") == 0)
+        {
+        	unsigned char wpm = atoi(argv[2]);
+
+        	nBytes = usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT, CUSTOM_RQ_SET_WPM, wpm, 0, (char *)buffer, sizeof(buffer), 5000);
         }
         else
         {

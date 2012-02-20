@@ -2,6 +2,8 @@ Archive member included because of file (symbol)
 
 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
                               ./main.o (__mulhi3)
+/usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodhi4.o)
+                              ./main.o (__udivmodhi4)
 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
                               ./main.o (__divmodsi4)
 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
@@ -41,6 +43,7 @@ usbRxToken          0x1               ./usbdrv/usbdrv.o
 usbInputBufOffset   0x1               ./usbdrv/usbdrv.o
 cur_state_end       0x4               ./main.o
 usbMsgPtr           0x2               ./usbdrv/usbdrv.o
+wpm                 0x2               ./main.o
 usbRxLen            0x1               ./usbdrv/usbdrv.o
 usbNewDeviceAddr    0x1               ./usbdrv/usbdrv.o
 usbCurrentTok       0x1               ./usbdrv/usbdrv.o
@@ -160,7 +163,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1138
+.text           0x00000000     0x11e0
  *(.vectors)
  .vectors       0x00000000       0x1e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/crttn85.o
                 0x00000000                __vectors
@@ -248,61 +251,64 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a
                 0x00000532                usbCrc16Append
                 0x0000053a                usbMeasureFrameLength
                 0x00000560                __vector_1
- .text          0x00000802      0x826 ./main.o
+ .text          0x00000802      0x8a6 ./main.o
                 0x00000802                __vector_10
                 0x0000084c                usbFunctionSetup
-                0x0000094c                usbFunctionWrite
-                0x000009c0                usbEventResetReady
-                0x00000a4a                set_wpm
-                0x00000a64                main
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
- .text          0x00001028        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
-                0x00001028                . = ALIGN (0x2)
+                0x000009a8                usbFunctionWrite
+                0x00000a1c                usbEventResetReady
+                0x00000aa6                set_wpm
+                0x00000ac0                main
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodhi4.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
+ .text          0x000010a8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
+                0x000010a8                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00001028       0x24 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
-                0x00001028                __mulhi3
- .text.libgcc   0x0000104c       0x36 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
-                0x0000104c                __divmodsi4
- .text.libgcc   0x00001082        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
- .text.libgcc   0x00001082        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
- .text.libgcc   0x00001082        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
- .text.libgcc   0x00001082       0x44 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
-                0x00001082                __udivmodsi4
+ .text.libgcc   0x000010a8       0x24 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
+                0x000010a8                __mulhi3
+ .text.libgcc   0x000010cc       0x28 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodhi4.o)
+                0x000010cc                __udivmodhi4
+ .text.libgcc   0x000010f4       0x36 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
+                0x000010f4                __divmodsi4
+ .text.libgcc   0x0000112a        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+ .text.libgcc   0x0000112a        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000112a        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000112a       0x44 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
+                0x0000112a                __udivmodsi4
  .text.avr-libc
-                0x000010c6       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
-                0x000010c6                __eerd_block_tn85
-                0x000010ca                __eerd_blraw_tn85
+                0x0000116e       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
+                0x0000116e                __eerd_block_tn85
+                0x00001172                __eerd_blraw_tn85
  .text.avr-libc
-                0x000010e6       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
-                0x000010e6                __eerd_byte_tn85
+                0x0000118e       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
+                0x0000118e                __eerd_byte_tn85
  .text.avr-libc
-                0x000010f6        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
-                0x000010f6                __eerd_word_tn85
+                0x0000119e        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
+                0x0000119e                __eerd_word_tn85
  .text.avr-libc
-                0x00001100       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
-                0x00001100                __eewr_block_tn85
+                0x000011a8       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
+                0x000011a8                __eewr_block_tn85
  .text.avr-libc
-                0x00001112       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
-                0x00001112                __eewr_byte_tn85
-                0x00001114                __eewr_r18_tn85
+                0x000011ba       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
+                0x000011ba                __eewr_byte_tn85
+                0x000011bc                __eewr_r18_tn85
  .text.avr-libc
-                0x0000112e        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
-                0x0000112e                __eewr_word_tn85
-                0x00001134                . = ALIGN (0x2)
+                0x000011d6        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
+                0x000011d6                __eewr_word_tn85
+                0x000011dc                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00001134        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
-                0x00001134                exit
-                0x00001134                _exit
+ .fini9         0x000011dc        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+                0x000011dc                exit
+                0x000011dc                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -321,11 +327,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00001134        0x4 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+ .fini0         0x000011dc        0x4 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
  *(.fini0)
-                0x00001138                _etext = .
+                0x000011e0                _etext = .
 
-.data           0x00800060       0x1e load address 0x00001138
+.data           0x00800060       0x1c load address 0x000011e0
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/crttn85.o
@@ -333,80 +339,83 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a
  .data          0x00800060        0x2 ./usbdrv/usbdrv.o
                 0x00800060                usbTxLen
  .data          0x00800062        0x0 ./usbdrv/usbdrvasm.o
- .data          0x00800062       0x1b ./main.o
+ .data          0x00800062       0x19 ./main.o
                 0x00800062                dit_speed
-                0x00800076                hell_tune
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
- .data          0x0080007d        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
+                0x00800074                hell_tune
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodhi4.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
+ .data          0x0080007b        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x0080007e                . = ALIGN (0x2)
- *fill*         0x0080007d        0x1 00
-                0x0080007e                _edata = .
-                0x0080007e                PROVIDE (__data_end, .)
+                0x0080007c                . = ALIGN (0x2)
+ *fill*         0x0080007b        0x1 00
+                0x0080007c                _edata = .
+                0x0080007c                PROVIDE (__data_end, .)
 
-.bss            0x0080007e       0x74
-                0x0080007e                PROVIDE (__bss_start, .)
+.bss            0x0080007c       0x76
+                0x0080007c                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0080007e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/crttn85.o
- .bss           0x0080007e        0x0 ./usbdrv/oddebug.o
- .bss           0x0080007e        0x2 ./usbdrv/usbdrv.o
- .bss           0x00800080        0x0 ./usbdrv/usbdrvasm.o
- .bss           0x00800080       0x37 ./main.o
-                0x00800080                cur_character
-                0x00800081                cur_hell_char
-                0x00800082                cur_hell_col
-                0x00800083                cur_hell_row
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
- .bss           0x008000b7        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
+ .bss           0x0080007c        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/crttn85.o
+ .bss           0x0080007c        0x0 ./usbdrv/oddebug.o
+ .bss           0x0080007c        0x2 ./usbdrv/usbdrv.o
+ .bss           0x0080007e        0x0 ./usbdrv/usbdrvasm.o
+ .bss           0x0080007e       0x37 ./main.o
+                0x0080007e                cur_character
+                0x0080007f                cur_hell_char
+                0x00800080                cur_hell_col
+                0x00800081                cur_hell_row
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_mulhi3.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodhi4.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_divmodsi4.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_exit.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_copy_data.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_clear_bss.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/avr25/libgcc.a(_udivmodsi4.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_block_attiny85.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_byte_attiny85.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eerd_word_attiny85.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_block_attiny85.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_byte_attiny85.o)
+ .bss           0x008000b5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr25/libc.a(eewr_word_attiny85.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x008000b7       0x2a ./usbdrv/usbdrv.o
-                0x008000b7                usbTxBuf
-                0x008000c2                usbDeviceAddr
-                0x008000c3                usbRxToken
-                0x008000c4                usbInputBufOffset
-                0x008000c5                usbMsgPtr
-                0x008000c7                usbRxLen
-                0x008000c8                usbNewDeviceAddr
-                0x008000c9                usbCurrentTok
-                0x008000ca                usbConfiguration
-                0x008000cb                usbRxBuf
- COMMON         0x008000e1       0x11 ./main.o
-                0x008000e1                fsk_tune
-                0x008000e2                timer
-                0x008000e6                dit_length
-                0x008000e8                cur_mode
-                0x008000e9                next_state
-                0x008000ea                tx_on
-                0x008000eb                cur_state
-                0x008000ec                cur_state_end
+ COMMON         0x008000b5       0x2a ./usbdrv/usbdrv.o
+                0x008000b5                usbTxBuf
+                0x008000c0                usbDeviceAddr
+                0x008000c1                usbRxToken
+                0x008000c2                usbInputBufOffset
+                0x008000c3                usbMsgPtr
+                0x008000c5                usbRxLen
+                0x008000c6                usbNewDeviceAddr
+                0x008000c7                usbCurrentTok
+                0x008000c8                usbConfiguration
+                0x008000c9                usbRxBuf
+ COMMON         0x008000df       0x13 ./main.o
+                0x008000df                fsk_tune
+                0x008000e0                timer
+                0x008000e4                dit_length
+                0x008000e6                cur_mode
+                0x008000e7                next_state
+                0x008000e8                tx_on
+                0x008000e9                cur_state
+                0x008000ea                cur_state_end
+                0x008000ee                wpm
                 0x008000f0                cur_msg_p
                 0x008000f2                PROVIDE (__bss_end, .)
-                0x00001138                __data_load_start = LOADADDR (.data)
-                0x00001156                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x000011e0                __data_load_start = LOADADDR (.data)
+                0x000011fc                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008000f2        0x0
                 0x008000f2                PROVIDE (__noinit_start, .)

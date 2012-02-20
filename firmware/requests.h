@@ -28,4 +28,12 @@
 #define CUSTOM_RQ_SET_MSG_1			3
 #define CUSTOM_RQ_GET_MSG_1			4
 
+// Set and get Message Memory 2
+#define CUSTOM_RQ_SET_MSG_2			5
+#define CUSTOM_RQ_GET_MSG_2			6
+
+// Set and get WPM
+#define CUSTOM_RQ_SET_WPM			7
+#define CUSTOM_RQ_GET_WPM			8
+
 #endif /* __REQUESTS_H_INCLUDED__ */

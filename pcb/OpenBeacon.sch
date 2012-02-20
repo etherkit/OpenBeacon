@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 18 Feb 2012 01:49:02 PM PST
+EESchema Schematic File Version 2  date Sun 19 Feb 2012 01:12:55 PM PST
 LIBS:NT7S
 LIBS:power
 LIBS:device
@@ -37,7 +37,7 @@ $Descr User 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "OpenBeacon"
-Date "18 feb 2012"
+Date "19 feb 2012"
 Rev "A"
 Comp "Etherkit"
 Comment1 ""
@@ -45,6 +45,15 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L +5V #PWR?
+U 1 1 4F4164F9
+P 4480 755
+F 0 "#PWR?" H 4480 845 20  0001 C CNN
+F 1 "+5V" H 4480 845 30  0000 C CNN
+	1    4480 755 
+	1    0    0    -1  
+$EndComp
 Connection ~ 5575 5870
 Wire Wire Line
 	5575 5605 5575 5870
@@ -757,7 +766,7 @@ L ZENER D5
 U 1 1 4F205C98
 P 5575 6330
 F 0 "D5" V 5595 6210 50  0000 C CNN
-F 1 "3.6V" V 5510 6185 40  0000 C CNN
+F 1 "1N5227B" V 5510 6130 40  0000 C CNN
 	1    5575 6330
 	0    -1   -1   0   
 $EndComp
@@ -766,7 +775,7 @@ L ZENER D3
 U 1 1 4F205C91
 P 5270 6335
 F 0 "D3" V 5300 6470 50  0000 C CNN
-F 1 "3.6V" V 5210 6490 40  0000 C CNN
+F 1 "1N5227B" V 5210 6555 40  0000 C CNN
 	1    5270 6335
 	0    -1   -1   0   
 $EndComp
@@ -1047,15 +1056,6 @@ F 1 "2N7000" H 5465 1315 50  0000 R CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR037
-U 1 1 4F1CB297
-P 4480 755
-F 0 "#PWR037" H 4480 855 30  0001 C CNN
-F 1 "VCC" H 4480 855 30  0000 C CNN
-	1    4480 755 
-	1    0    0    -1  
-$EndComp
-$Comp
 L R R23
 U 1 1 4F1CB083
 P 5155 1130
@@ -1186,7 +1186,7 @@ L R R19
 U 1 1 4F1CA9ED
 P 6095 3395
 F 0 "R19" H 6235 3440 50  0000 C CNN
-F 1 "33" H 6215 3360 50  0000 C CNN
+F 1 "47" H 6215 3360 50  0000 C CNN
 	1    6095 3395
 	1    0    0    -1  
 $EndComp
@@ -1384,7 +1384,7 @@ L R R8
 U 1 1 4F1CA461
 P 4480 2965
 F 0 "R8" H 4610 3000 50  0000 C CNN
-F 1 "1k" H 4610 2920 50  0000 C CNN
+F 1 "470" H 4610 2920 50  0000 C CNN
 	1    4480 2965
 	1    0    0    -1  
 $EndComp
