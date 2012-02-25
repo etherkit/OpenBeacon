@@ -55,3 +55,8 @@ Frequency Dependent Components
                                           C22, C23, C24
 | Trim Caps                         2     C3, C5
 | Inductors                         4     L1, L2, L3, L4
+
+Miscellaneous
+| Red Magnet Wire, 28 AWG (feet)    4
+| Green Magnet Wire, 28 AWG (feet)  1
+| DIP-8 socket                      1                                          FCI DILB8P-223TLF
