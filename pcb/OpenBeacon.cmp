@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le Wed 01 Feb 2012 08:52:49 PM PST
+Cmp-Mod V01 Created by PcbNew date = Mon 05 Mar 2012 04:02:33 PM PST
 
 BeginCmp
 TimeStamp = /4F21B123;
@@ -185,7 +185,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4F205C91;
 Reference = D3;
-ValeurCmp = 3.6V;
+ValeurCmp = 1N5227B;
 IdModule  = DIODE3;
 EndCmp
 
@@ -199,7 +199,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4F205C98;
 Reference = D5;
-ValeurCmp = 3.6V;
+ValeurCmp = 1N5227B;
 IdModule  = DIODE3;
 EndCmp
 
@@ -242,7 +242,7 @@ BeginCmp
 TimeStamp = /4F205BAB;
 Reference = J2;
 ValeurCmp = USB_2;
-IdModule  = USB-B-MICRO-FCI;
+IdModule  = USB-B-FCI-61729-1011BLF;
 EndCmp
 
 BeginCmp
@@ -255,7 +255,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4F1CB715;
 Reference = J4;
-ValeurCmp = BNC;
+ValeurCmp = Ant;
 IdModule  = BNC-AMPHENOL-31-5431-10RFX;
 EndCmp
 
@@ -304,12 +304,12 @@ EndCmp
 BeginCmp
 TimeStamp = /4F1CA9E6;
 Reference = Q3;
-ValeurCmp = BD139;
+ValeurCmp = BD139-16;
 IdModule  = TO-126;
 EndCmp
 
 BeginCmp
-TimeStamp = /4F1CB067;
+TimeStamp = /4F4013DB;
 Reference = Q4;
 ValeurCmp = 2N4403;
 IdModule  = TO-92-EBC-NT7S;
@@ -374,7 +374,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4F1CA461;
 Reference = R8;
-ValeurCmp = 1k;
+ValeurCmp = 470;
 IdModule  = RESISTOR1;
 EndCmp
 
@@ -491,6 +491,13 @@ IdModule  = RESISTOR1;
 EndCmp
 
 BeginCmp
+TimeStamp = /4F4F1ED4;
+Reference = R25;
+ValeurCmp = 4.7;
+IdModule  = RESISTOR1;
+EndCmp
+
+BeginCmp
 TimeStamp = /4F221FEC;
 Reference = S1;
 ValeurCmp = PUSHBUTTON;
@@ -514,7 +521,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4F20DBE8;
 Reference = U2;
-ValeurCmp = 750L05;
+ValeurCmp = 78L05;
 IdModule  = TO-92-EBC-NT7S;
 EndCmp
 

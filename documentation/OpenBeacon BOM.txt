@@ -1,11 +1,11 @@
 OpenBeacon BOM
 Etherkit
-19 Feb 2012
+7 Apr 2012
 
 | Part                            | Qty  | Ref                               | P/N
 ======================================================================================================
 Capacitors
-| 100n                              13    C1, C2, C9, C10, C11, C12, C13,
+| 100n                              12    C1, C2, C9, C10, C11, C13,
                                           C14, C15, C16, C17, C18, C19       
 Diodes
 | Green LED (5 mm)                  1     D2        
@@ -26,17 +26,19 @@ Transistors
 | BD139-16                          1     Q3        
 
 Resistors & Trimmers
+| 1 (brown-black-gold)              1     R25  
 | 1.5k (brown-green-red)            1     R15       
-| 10 (brown-black-black)            1     R21       
-| 100 (brown-black-brown)           1     R14       
+| 10 (brown-black-black)            2     R14, R21       
 | 100k (brown-black-yellow)         4     R1, R2, R3, R24           
 | 10k (brown-black-orange)          4     R5, R6, R9, R12        
 | 1k (brown-black-red)              2     R16, R18       
-| 2.2k (red-red-red)                1     R17       
-| 22k (red-red-orange)              2     R22, R23       
-| 330 (orange-orange-brown)         1     R4        
-| 47 (yellow-purple-black)          3     R7, R13, R19        
-| 470 (yellow-purple-brown)         1     R8        
+| 22 (red-red-black)                1     R19       
+| 2.2k (red-red-red)                1     R8        
+| 22k (red-red-orange)              2     R22, R23
+| 330 (orange-orange-brown)         1     R4
+| 4.7 (yellow-purple-gold)          1     R25
+| 4.7k (yellow-purple-red)          1     R17        
+| 47 (yellow-purple-black)          2     R7, R13        
 | 68 (blue-grey-black)              2     R10, R11   
 | 470 trim                          1     R20                                  Bournes 3319P-1-471 
 
@@ -44,19 +46,18 @@ Buttons
 | Pushbutton                        1     S1                                   TE 1571010-1
 
 Transformers
-| FT37-43 BIFILAR                   1     T1        
+| FT37-43 10T BIFILAR               1     T1        
 
 ICs
 | 78L05                             1     U2        
 | ATTINY85-20                       1     U1 
 
-Frequency Dependent Components       
-| Capacitors                        9     C4, C6, C7, C8, C20, C21, 
-                                          C22, C23, C24
-| Trim Caps                         2     C3, C5
-| Inductors                         4     L1, L2, L3, L4
+Frequency Dependent Components
+            |C3   |C4      |C5   |C6      |C7/C8   |C12  |C20/C24 |C22  |C21/C23 |L1/L2 |L3/L4
+30 Meters   |10   |3.3 C0G |30   |33 C0G  |47 C0G  |22   |330     |560  |N/A     |10 u  |1.1 u T37-2 16T (red core)
 
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4
 | Green Magnet Wire, 28 AWG (feet)  1
 | DIP-8 socket                      1                                          FCI DILB8P-223TLF
+| PCB

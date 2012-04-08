@@ -2,11 +2,40 @@
  * main.c
  *
  *  Created on: Jan 8, 2012
- *      Author: jason
+ *      Author: Jason Milldrum
+ *     Company: Etherkit
+ *
+ *     Copyright (c) 2012, Jason Milldrum
+ *     All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without modification,
+ *  are permitted provided that the following conditions are met:
+ *
+ *  - Redistributions of source code must retain the above copyright notice, this list
+ *  of conditions and the following disclaimer.
+ *
+ *  - Redistributions in binary form must reproduce the above copyright notice, this list
+ *  of conditions and the following disclaimer in the documentation and/or other
+ *  materials provided with the distribution.
+ *
+ *  - Neither the name of Etherkit nor the names of its contributors may be
+ *  used to endorse or promote products derived from this software without specific
+ *  prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ *  SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ *  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <avr/io.h>
 #include <avr/sfr_defs.h>
@@ -25,7 +54,7 @@
 #include "font.h"
 #include "modes.h"
 
-// Defines
+// Hardware Defines
 #define FSK_DDR					DDRB
 #define FSK_PORT				PORTB
 #define FSK						PB4
@@ -34,36 +63,57 @@
 #define KEY_PORT				PORTB
 #define KEY						PB3
 
-#define MSG_BUFFER_SIZE			41			// Message size in characters
+#define S1_DDR					DDRB
+#define S1_PORT					PORTB
+#define S1_PIN					PINB
+#define S1						PB1
 
+// Firmware constant defines
 #define DFCW_DEFAULT_OFFSET		100
+
+#define DEBOUNCE_PRESS_TIME		3			// Amount of captures for press keybounce (in 2 ms increments)
+#define DEBOUNCE_HOLD_TIME		250			// Amount of captures for hold keybounce (in 2 ms increments)
 
 #define MULT_DAH				3			// DAH is 3x a DIT
 #define MULT_WORDDELAY			7			// Space between words is 7 dits
 #define MULT_HELL_WORDDELAY		500
-#define MULT_HELL_CHARDELAY		10
+#define MULT_HELL_CHARDELAY		20
+#define MULT_HELL_GLYPHDELAY	60
 #define HELL_ROW_RPT			3
 
 #define DEFAULT_MODE			0
-#define DEFAULT_WPM				40
+#define DEFAULT_WPM				5000
+#define DEFAULT_MSG_DELAY		0			// in minutes
+
+#define WSPR_SYMBOL_LENGTH		342			// 684 ms symbol TX length / 2 ms tick
 
 // Enumerations
-enum BOOL {TRUE, FALSE};
-enum STATE {STATE_IDLE, STATE_DIT, STATE_DAH, STATE_DITDELAY, STATE_DAHDELAY, STATE_WORDDELAY, STATE_CHARDELAY, STATE_HELLCOL, STATE_HELLROW,
-			STATE_CAL};
+enum BOOL {FALSE, TRUE};
+enum BUFFER {BUFFER_1 = 1, BUFFER_2};
+enum USB_WRITE {USB_BUFFER_1, USB_BUFFER_2, USB_GLYPH, USB_WSPR_BUFFER};
+enum STATE {STATE_IDLE, STATE_DIT, STATE_DAH, STATE_DITDELAY, STATE_DAHDELAY, STATE_WORDDELAY, STATE_MSGDELAY,
+			STATE_CHARDELAY, STATE_HELLCOL, STATE_HELLROW, STATE_CAL, STATE_WSPR, STATE_WSPR_INIT, STATE_PREAMBLE, STATE_HELLIDLE};
 
 // Global variables
-uint16_t dit_length;
+uint32_t cur_timer = 0;
+uint32_t dit_length;
 enum MODE cur_mode;
 enum STATE cur_state, next_state;
-uint32_t cur_state_end;
-static char msg_buffer[MSG_BUFFER_SIZE];
+uint32_t cur_state_end, msg_delay_end;
+static char msg_buffer[WSPR_BUFFER_SIZE];
+static char temp_buffer[WSPR_BUFFER_SIZE];
 char * cur_msg_p;
+char * cur_glyph_p;
 char cur_character = '\0';
 char cur_hell_char = '\0';
 uint8_t cur_hell_col = 0;
 uint8_t cur_hell_row = 0;
 uint16_t wpm;
+uint8_t msg_delay;
+enum BUFFER cur_buffer;
+enum USB_WRITE write_to;
+uint8_t dfcw_offset;
+volatile enum BOOL S1_active;
 
 static uchar currentPosition = 0;
 static uchar bytesRemaining = 0;
@@ -77,47 +127,75 @@ volatile uint8_t fsk_tune;
 uint8_t EEMEM ee_osc;
 uint8_t	EEMEM ee_mode = DEFAULT_MODE;
 uint16_t EEMEM ee_wpm = DEFAULT_WPM;
+uint8_t EEMEM ee_msg_delay = DEFAULT_MSG_DELAY;
+uint8_t EEMEM ee_dfcw_offset = DFCW_DEFAULT_OFFSET;
 uchar EEMEM ee_msg_mem_1[MSG_BUFFER_SIZE] = "N0CALL";
+uchar EEMEM ee_msg_mem_2[MSG_BUFFER_SIZE] = "MSG2";
+uchar EEMEM ee_wspr_symbols[WSPR_BUFFER_SIZE] = "";
+uchar EEMEM ee_buffer = BUFFER_1;
+uchar EEMEM ee_glyph_1[GLYPH_SIZE] = {0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x80};
+uchar EEMEM ee_glyph_2[GLYPH_SIZE] = {0x1C, 0x3E, 0x7F, 0x7F, 0x7F, 0x3E, 0x1C, 0x80};
+uchar EEMEM ee_glyph_3[GLYPH_SIZE] = "";
+uchar EEMEM ee_glyph_4[GLYPH_SIZE] = "";
 
 // Global constants
-//const uint8_t hell_tune[HELL_ROWS] = {0, 42, 84, 126, 169, 210, 252};
-//const uint8_t hell_tune[HELL_ROWS] = {252, 210, 169, 126, 84, 42, 0};
 const uint8_t hell_tune[HELL_ROWS] = {252, 185, 140, 85, 53, 23, 0};
 
 // Function prototypes
-void set_wpm(uint16_t);
+void set_wpm(uint32_t);
+uint32_t get_msg_delay(uint8_t);
+void init_tx(void);
+void debounce(void);
 
 // Interrupt service routines
 ISR(TIM0_COMPA_vect)
 {
 	// Tick the clock
 	timer++;
+
+	debounce();
 }
 
 usbMsgLen_t usbFunctionSetup(uchar data[8])
 {
 	usbRequest_t *rq = (void *)data;
+	usbMsgLen_t len;
 	static uchar dataBuffer[4];  /* buffer must stay valid when usbFunctionSetup returns */
 
-    if(rq->bRequest == CUSTOM_RQ_ECHO)
-    { /* echo -- used for reliability tests */
+	switch(rq->bRequest)
+	{
+	case CUSTOM_RQ_ECHO:
+		/* echo -- used for reliability tests */
         dataBuffer[0] = rq->wValue.bytes[0];
         dataBuffer[1] = rq->wValue.bytes[1];
         dataBuffer[2] = rq->wIndex.bytes[0];
         dataBuffer[3] = rq->wIndex.bytes[1];
         usbMsgPtr = dataBuffer;         /* tell the driver which data to return */
         return 4;
-    }
-    else if(rq->bRequest == CUSTOM_RQ_SET_MODE)
-    {
-    	// Set mode
+        break;
+
+	case CUSTOM_RQ_SET_MODE:
+       	// Set mode
         cur_mode = rq->wValue.bytes[0];
         eeprom_write_byte(&ee_mode, cur_mode);
 
         // Reset message buffer
-        eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
-		cur_msg_p = msg_buffer;
-		cur_character = '\0';
+        if(cur_mode == MODE_WSPR)
+        {
+        	//wspr_buffer
+        	eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
+			cur_msg_p = msg_buffer;
+			cur_character = '\0';
+        }
+        else
+        {
+			eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+			cur_msg_p = msg_buffer;
+			cur_character = '\0';
+        }
+
+        // If in message delay mode, set the delay
+        msg_delay_end = cur_timer + get_msg_delay(msg_delay);
 
 		// Reset Hell index
         cur_hell_row = 0;
@@ -129,69 +207,191 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
         eeprom_write_word(&ee_wpm, wpm);
 
         // Put back in IDLE state
+        cur_state_end = cur_timer;
         cur_state = STATE_IDLE;
 
         return 0;
-    }
-    else if(rq->bRequest == CUSTOM_RQ_GET_MODE)
-    {
+        break;
+
+	case CUSTOM_RQ_GET_MODE:
         dataBuffer[0] = cur_mode;
         usbMsgPtr = dataBuffer;         /* tell the driver which data to return */
         return 1;                       /* tell the driver to send 1 byte */
-    }
-    else if(rq->bRequest == CUSTOM_RQ_SET_MSG_1)
-    {
-        currentPosition = 0;                // initialize position index
-        bytesRemaining = rq->wLength.word;  // store the amount of data requested
-        if(bytesRemaining > sizeof(msg_buffer)) // limit to buffer size
-            bytesRemaining = sizeof(msg_buffer);
-        return USB_NO_MSG;        // tell driver to use usbFunctionWrite()
-    }
-    else if(rq->bRequest == CUSTOM_RQ_GET_MSG_1)
-    {
-    	usbMsgLen_t len = MSG_BUFFER_SIZE;                     // we return up to 64 bytes
-		if(len > rq->wLength.word)          // if the host requests less than we have
-			len = rq->wLength.word;         // return only the amount requested
-		usbMsgPtr = (uchar *)msg_buffer;                 // tell driver where the buffer starts
-		return len;                         // tell driver how many bytes to send
-    }
-    else if(rq->bRequest == CUSTOM_RQ_SET_WPM)
-    {
-    	wpm = rq->wValue.bytes[0] * 100;
+        break;
+
+	case CUSTOM_RQ_SET_MSG_1:
+        currentPosition = 0;					// initialize position index
+        bytesRemaining = rq->wLength.word;		// store the amount of data requested
+        if(bytesRemaining > sizeof(temp_buffer))	// limit to buffer size
+            bytesRemaining = sizeof(temp_buffer);
+        write_to = USB_BUFFER_1;
+        return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
+    	break;
+
+	case CUSTOM_RQ_GET_MSG_1:
+    	len = MSG_BUFFER_SIZE;					// we return up to 64 bytes
+		if(len > rq->wLength.word)				// if the host requests less than we have
+			len = rq->wLength.word;				// return only the amount requested
+		eeprom_read_block((void*)&temp_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+		usbMsgPtr = (uchar *)temp_buffer;		// tell driver where the buffer starts
+		return len;                         	// tell driver how many bytes to send
+    	break;
+
+	case CUSTOM_RQ_SET_MSG_2:
+        currentPosition = 0;					// initialize position index
+        bytesRemaining = rq->wLength.word;		// store the amount of data requested
+        if(bytesRemaining > sizeof(temp_buffer))	// limit to buffer size
+            bytesRemaining = sizeof(temp_buffer);
+        write_to = USB_BUFFER_2;
+        return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
+    	break;
+
+	case CUSTOM_RQ_GET_MSG_2:
+    	len = MSG_BUFFER_SIZE;					// we return up to 64 bytes
+		if(len > rq->wLength.word)				// if the host requests less than we have
+			len = rq->wLength.word;				// return only the amount requested
+		eeprom_read_block((void*)&temp_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
+		usbMsgPtr = (uchar *)temp_buffer;		// tell driver where the buffer starts
+		return len;                         	// tell driver how many bytes to send
+    	break;
+
+	case CUSTOM_RQ_SET_WPM:
+    	wpm = rq->wValue.bytes[0] * 1000;
     	set_wpm(wpm);
     	eeprom_write_word(&ee_wpm, wpm);
-    }
-    else if(rq->bRequest == CUSTOM_RQ_GET_WPM)
-    {
-        dataBuffer[0] = (uchar)(wpm / 100);
-        usbMsgPtr = dataBuffer;         /* tell the driver which data to return */
-        return 1;                       /* tell the driver to send 1 byte */
-    }
+    	return 0;
+    	break;
+
+	case CUSTOM_RQ_GET_WPM:
+        dataBuffer[0] = (uchar)(wpm / 1000);
+        usbMsgPtr = dataBuffer;         		// tell the driver which data to return
+        return 1;								// tell the driver to send 1 byte
+    	break;
+
+	case CUSTOM_RQ_SET_MSG_DLY:
+    	eeprom_write_byte(&ee_msg_delay, rq->wValue.bytes[0]);
+		msg_delay = rq->wValue.bytes[0];
+
+		msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+		return 0;
+		break;
+
+	case CUSTOM_RQ_GET_MSG_DLY:
+        dataBuffer[0] = (uchar)msg_delay;
+        usbMsgPtr = dataBuffer;         // tell the driver which data to return
+        return 1;                       // tell the driver to send 1 byte
+    	break;
+
+	case CUSTOM_RQ_SET_CUR_BUFFER:
+		if(rq->wValue.bytes[0] == 1)
+		{
+			cur_buffer = BUFFER_1;
+			eeprom_write_byte(&ee_buffer, cur_buffer);
+		}
+		else if(rq->wValue.bytes[0] == 2)
+		{
+			cur_buffer = BUFFER_2;
+			eeprom_write_byte(&ee_buffer, cur_buffer);
+		}
+		return 0;
+		break;
+
+	case CUSTOM_RQ_GET_CUR_BUFFER:
+		dataBuffer[0] = (uchar)cur_buffer;
+		usbMsgPtr = dataBuffer;         // tell the driver which data to return
+		return 1;                       // tell the driver to send 1 byte
+		break;
+
+	case CUSTOM_RQ_SET_DFCW_OFFSET:
+    	dfcw_offset = rq->wValue.bytes[0];
+    	eeprom_write_byte(&ee_dfcw_offset, dfcw_offset);
+    	return 0;
+    	break;
+
+	case CUSTOM_RQ_GET_DFCW_OFFSET:
+        dataBuffer[0] = (uchar)(dfcw_offset);
+        usbMsgPtr = dataBuffer;         		// tell the driver which data to return
+        return 1;								// tell the driver to send 1 byte
+    	break;
+
+	case CUSTOM_RQ_SET_GLYPH:
+		currentPosition = 0;					// initialize position index
+		bytesRemaining = rq->wLength.word;		// store the amount of data requested
+		if(bytesRemaining > sizeof(temp_buffer))	// limit to buffer size
+			bytesRemaining = sizeof(temp_buffer);
+		write_to = USB_GLYPH;
+		return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
+		break;
+
+	case CUSTOM_RQ_SET_WSPR:
+		currentPosition = 0;					// initialize position index
+		bytesRemaining = rq->wLength.word;		// store the amount of data requested
+		if(bytesRemaining > sizeof(temp_buffer))	// limit to buffer size
+			bytesRemaining = sizeof(temp_buffer);
+		write_to = USB_WSPR_BUFFER;
+		return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
+		break;
+
+	case CUSTOM_RQ_START_TX:
+		init_tx();
+		return 0;
+		break;
+
+	default:
+		break;
+	}
     return 0;   /* default for not implemented requests: return no data back to host */
 }
 
 uchar usbFunctionWrite(uchar *data, uchar len)
 {
 	uchar i;
+	uint8_t glyph_number;
+	char *glyph_ptr = NULL;
 
     if(len > bytesRemaining)                // if this is the last incomplete chunk
         len = bytesRemaining;               // limit to the amount we can store
     bytesRemaining -= len;
     for(i = 0; i < len; i++)
-        msg_buffer[currentPosition++] = data[i];
+        temp_buffer[currentPosition++] = data[i];
 
     if(bytesRemaining == 0)
     {
-		// Update EEPROM with new message
-		eeprom_write_block((const void*)&msg_buffer, (void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+    	switch(write_to)
+    	{
+    	case USB_BUFFER_1:
+    		eeprom_write_block((const void*)&temp_buffer, (void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+    		break;
 
-		// Reset message buffer
-		cur_msg_p = msg_buffer;
-		cur_character = '\0';
+    	case USB_BUFFER_2:
+    		eeprom_write_block((const void*)&temp_buffer, (void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
+    		break;
 
-		// Reset Hell index
-		cur_hell_row = 0;
-		cur_hell_col = 0;
+    	case USB_GLYPH:
+    		// Get the glyph number from the first char, then point to beginning of glyph string
+    		strncpy(glyph_ptr, temp_buffer, 1);
+    		glyph_number = atoi(glyph_ptr);
+    		glyph_ptr = temp_buffer;
+    		glyph_ptr++;
+
+    		switch(glyph_number)
+    		{
+    		case 1:
+    			eeprom_write_block((const void*)glyph_ptr, (void*)&ee_glyph_1, GLYPH_SIZE - 1);
+    			break;
+    		case 2:
+				eeprom_write_block((const void*)glyph_ptr, (void*)&ee_glyph_2, GLYPH_SIZE - 1);
+				break;
+    		}
+    		break;
+
+    	case USB_WSPR_BUFFER:
+    		eeprom_write_block((const void*)&temp_buffer, (void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
+    		break;
+
+    	default:
+    		break;
+    	}
 
 		// Put back in IDLE state
 		cur_state = STATE_IDLE;
@@ -238,13 +438,86 @@ void usbEventResetReady(void)
     eeprom_write_byte(&ee_osc, OSCCAL);   // store the calibrated value in EEPROM
 }
 
-void set_wpm(uint16_t new_wpm)
+void set_wpm(uint32_t new_wpm)
 {
-	// This is WPM * 100 due to need for fractional WPM for slow modes
+	// This is WPM * 1000 due to need for fractional WPM for slow modes
 	//
 	// Dit length in milliseconds is 1200 ms / WPM
 	// Divide by 2 ms to get number of timer ticks
-	dit_length = (120000 / new_wpm) / 2;
+	dit_length = (1200000L / new_wpm) / 2;
+}
+
+uint32_t get_msg_delay(uint8_t delay_minutes)
+{
+	// The single function parameter is the message delay time in minutes
+	if(delay_minutes > MAX_MSG_DELAY)
+		delay_minutes = MAX_MSG_DELAY;
+
+	// Number of clock ticks is the number of minutes * 29978 ticks/per min  --63?
+	return (uint32_t)delay_minutes * 29978L;
+}
+
+void init_tx(void)
+{
+	if(cur_mode == MODE_WSPR)
+	{
+		// Reset the WSPR symbol buffer
+		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
+		cur_msg_p = msg_buffer;
+		cur_character = '\0';
+
+		// Reset to IDLE state
+        cur_state_end = cur_timer;
+        cur_state = STATE_IDLE;
+	}
+	else
+	{
+		// Reset the message buffer
+		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+		cur_msg_p = msg_buffer;
+		cur_character = '\0';
+
+		// If in message delay mode, set the delay
+		msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+
+		// Reset Hell index
+		cur_hell_row = 0;
+		cur_hell_col = 0;
+
+		// Reset WPM
+		wpm = dit_speed[cur_mode];
+		set_wpm(wpm);
+		eeprom_write_word(&ee_wpm, wpm);
+
+		// Reset to IDLE state
+		cur_state_end = cur_timer;
+		cur_state = STATE_IDLE;
+	}
+}
+
+void debounce(void)
+{
+	static uint16_t S1_on_count, S1_off_count;
+
+	// Debounce S1
+	if(bit_is_clear(S1_PIN, S1))
+	{
+		if(S1_on_count < DEBOUNCE_PRESS_TIME)
+			S1_on_count++;
+		S1_off_count = 0;
+	}
+	else
+	{
+		if(S1_off_count < DEBOUNCE_PRESS_TIME)
+			S1_off_count++;
+		S1_on_count = 0;
+	}
+
+	// Set button flags according to final debounce count
+	if(S1_on_count >= DEBOUNCE_PRESS_TIME)
+		S1_active = TRUE;
+	if(S1_off_count >= DEBOUNCE_PRESS_TIME)
+		S1_active = FALSE;
 }
 
 int main(void)
@@ -252,8 +525,7 @@ int main(void)
 	uchar i;
 	uchar calibrationValue;
 
-	static uint32_t cur_timer = 0;
-
+	//static uint32_t cur_timer = 0;
 
 	//-------------------------------------------------------------------------------------------
 	// VUSB init
@@ -286,7 +558,7 @@ int main(void)
 
 
 	//-------------------------------------------------------------------------------------------
-	// OpenQRSS init
+	// OpenBeacon init
 	//-------------------------------------------------------------------------------------------
 
 	// Set up Timer0 for event timer
@@ -311,6 +583,9 @@ int main(void)
 	KEY_DDR |= _BV(KEY);
 	KEY_PORT |= _BV(KEY);
 
+	S1_DDR &= ~(_BV(S1));
+	S1_PORT |= _BV(S1); // Enable pull-up
+
 	OCR1B = 255;
 
 	// Transmitter off
@@ -325,7 +600,17 @@ int main(void)
 	cur_state = STATE_IDLE;
 	wpm = eeprom_read_word(&ee_wpm);
 	set_wpm(wpm);
-	eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+	cur_buffer = eeprom_read_byte(&ee_buffer);
+	dfcw_offset = eeprom_read_byte(&ee_dfcw_offset);
+	if(cur_buffer == BUFFER_1)
+		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+	else if(cur_buffer == BUFFER_2)
+		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
+
+	msg_delay = eeprom_read_byte(&ee_msg_delay);
+	msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+
+	init_tx();
 
 	sei();
 
@@ -338,19 +623,35 @@ int main(void)
 		cur_timer = timer;
 		sei();
 
+		// Process button press
+		if(S1_active)
+			init_tx();
+
+		// State machine
 		switch(cur_mode)
 		{
 		case MODE_DFCW3:
 		case MODE_DFCW6:
 		case MODE_DFCW10:
+		case MODE_DFCW120:
 		case MODE_QRSS3:
 		case MODE_QRSS6:
 		case MODE_QRSS10:
+		case MODE_QRSS120:
 		case MODE_CW:
 			switch(cur_state)
 			{
 			case STATE_IDLE:
-				// We should only be in IDLE to figure out what to do next
+				// TX off
+				KEY_PORT &= ~(_BV(KEY));
+
+				if(msg_delay > 0 && msg_delay_end <= cur_timer && cur_msg_p == msg_buffer && cur_mode != MODE_CW)
+				{
+					msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+					cur_state_end = cur_timer + (dit_length * MULT_WORDDELAY);
+					cur_state = STATE_PREAMBLE;
+					break;
+				}
 
 				// If this is the first time thru the message loop, get the first character
 				if((cur_msg_p == msg_buffer) && (cur_character == '\0'))
@@ -406,16 +707,48 @@ int main(void)
 				else
 				{
 					// Reload the message buffer and set buffer pointer back to beginning
-					eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+					if(cur_buffer == BUFFER_1)
+						eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+					else if(cur_buffer == BUFFER_2)
+						eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
 					cur_msg_p = msg_buffer;
 					cur_character = '\0';
 
-					// Put a word delay at the end of message
-					cur_state_end = cur_timer + (dit_length * MULT_WORDDELAY);
-					cur_state = STATE_WORDDELAY;
+					if(msg_delay == 0)
+					{
+						// If a constantly repeating message, put a word delay at the end of message
+						cur_state_end = cur_timer + (dit_length * MULT_WORDDELAY);
+						cur_state = STATE_WORDDELAY;
+					}
+					else
+					{
+						// Otherwise, set the message delay time
+						if(msg_delay_end < cur_timer + (dit_length * MULT_WORDDELAY))
+							cur_state_end = cur_timer + (dit_length * MULT_WORDDELAY);
+						else
+							cur_state_end = msg_delay_end;
+
+						cur_state = STATE_MSGDELAY;
+					}
 				}
 
 				break;
+
+			case STATE_PREAMBLE:
+				// Wait a word delay with TX on before starting message
+				OCR1B = 0;
+
+				// Transmitter on
+				KEY_PORT |= _BV(KEY);
+
+
+				// When done waiting, go back to IDLE state to start the message
+				if(cur_timer > cur_state_end)
+				{
+					cur_state = STATE_IDLE;
+				}
+				break;
+
 			case STATE_DIT:
 			case STATE_DAH:
 				switch(cur_mode)
@@ -423,15 +756,17 @@ int main(void)
 				case MODE_DFCW3:
 				case MODE_DFCW6:
 				case MODE_DFCW10:
+				case MODE_DFCW120:
 					// Transmitter on
 					KEY_PORT |= _BV(KEY);
 
 					// Set FSK to MARK (lower capacitance/higher freq)
-					OCR1B = DFCW_DEFAULT_OFFSET;
+					OCR1B = dfcw_offset;
 					break;
 				case MODE_QRSS3:
 				case MODE_QRSS6:
 				case MODE_QRSS10:
+				case MODE_QRSS120:
 				case MODE_CW:
 					// Transmitter on
 					KEY_PORT |= _BV(KEY);
@@ -450,6 +785,7 @@ int main(void)
 					case MODE_DFCW3:
 					case MODE_DFCW6:
 					case MODE_DFCW10:
+					case MODE_DFCW120:
 						// Transmitter on
 						KEY_PORT |= _BV(KEY);
 
@@ -459,6 +795,7 @@ int main(void)
 					case MODE_QRSS3:
 					case MODE_QRSS6:
 					case MODE_QRSS10:
+					case MODE_QRSS120:
 					case MODE_CW:
 						// Transmitter off
 						KEY_PORT &= ~(_BV(KEY));
@@ -477,12 +814,27 @@ int main(void)
 			case STATE_DITDELAY:
 			case STATE_DAHDELAY:
 			case STATE_WORDDELAY:
+			case STATE_MSGDELAY:
 				OCR1B = 0;
+
+				if(cur_state == STATE_MSGDELAY || cur_mode == MODE_QRSS3 || cur_mode == MODE_QRSS6 || cur_mode == MODE_QRSS10 || cur_mode == MODE_QRSS120 || cur_mode == MODE_CW)
+				{
+					// Transmitter off
+					KEY_PORT &= ~(_BV(KEY));
+				}
+				else
+				{
+					// Transmitter on
+					KEY_PORT |= _BV(KEY);
+				}
+
 				if(cur_timer > cur_state_end)
 				{
 					cur_state = STATE_IDLE;
 				}
 				break;
+
+
 			default:
 				break;
 			}
@@ -492,21 +844,23 @@ int main(void)
 			switch(cur_state)
 			{
 			case STATE_IDLE:
+				if(msg_delay > 0 && msg_delay_end <= cur_timer)
+				{
+					msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+				}
+
 				// If this is the first time thru the message loop, get the first character
-				/*
 				if((cur_msg_p == msg_buffer) && (cur_hell_char == '\0'))
 				{
 					cur_hell_col = 0;
-					cur_hell_char = pgm_read_byte(&fontchar[(*cur_msg_p) - FONT_START][cur_hell_col]);
+					cur_hell_char = pgm_read_byte(&fontchar[(*cur_msg_p) - FONT_START][cur_hell_col++]);
 					cur_state_end = cur_timer + (dit_length);
 					cur_state = STATE_HELLCOL;
 				}
 				else
 				{
-				*/
-					cur_hell_char = pgm_read_byte(&fontchar[(*cur_msg_p) - FONT_START][cur_hell_col]);
+					cur_hell_char = pgm_read_byte(&fontchar[(*cur_msg_p) - FONT_START][cur_hell_col++]);
 
-					cur_hell_col++;
 					if(cur_hell_col > HELL_COLS)
 					{
 						// Reset Hell column
@@ -519,12 +873,27 @@ int main(void)
 						{
 							// End of message
 							// Reload the message buffer and set buffer pointer back to beginning
-							eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+							if(cur_buffer == BUFFER_1)
+								eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+							else if(cur_buffer == BUFFER_2)
+								eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
 							cur_msg_p = msg_buffer;
 							cur_hell_char = '\0';
 
-							// Put a word delay at the end of message
-							cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+							if(msg_delay == 0)
+							{
+								// If a constantly repeating message, put a word delay at the end of message
+								cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+							}
+							else
+							{
+								// Otherwise, set the message delay time
+								if(msg_delay_end < cur_timer + (dit_length * MULT_HELL_WORDDELAY))
+									cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+								else
+									cur_state_end = msg_delay_end;
+							}
+
 							cur_state = STATE_WORDDELAY;
 						}
 						else
@@ -538,7 +907,7 @@ int main(void)
 						//cur_hell_char = pgm_read_byte(&fontchar[(*cur_msg_p) - FONT_START][cur_hell_col]);
 						cur_state_end = cur_timer + (dit_length);
 						cur_state = STATE_HELLCOL;
-					//}
+					}
 				}
 				break;
 			case STATE_HELLCOL:
@@ -585,6 +954,243 @@ int main(void)
 				break;
 			}
 			break;
+
+		case MODE_GLYPHCODE:
+			switch(cur_state)
+			{
+			case STATE_IDLE:
+				// Transmitter off
+				KEY_PORT &= ~(_BV(KEY));
+				OCR1B = 0;
+
+				if(msg_delay > 0 && msg_delay_end <= cur_timer)
+				{
+					msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+				}
+
+				// If this is the first time thru the message loop, get the first character
+				if((cur_msg_p == msg_buffer) && (cur_character == '\0'))
+				{
+					cur_character = pgm_read_byte(&morsechar[(*cur_msg_p) - MORSE_CHAR_START]);
+				}
+
+				// Get the current element in the current character
+				if(cur_character != '\0')
+				{
+					if(cur_character == 0b10000000 || cur_character == 0b11111111)	// End of character marker or SPACE
+					{
+						// Set next state based on whether EOC or SPACE
+						if(cur_character == 0b10000000)
+						{
+							cur_state_end = cur_timer + (dit_length * MULT_HELL_GLYPHDELAY);
+							cur_state = STATE_CHARDELAY;
+						}
+						else
+						{
+							cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+							cur_state = STATE_WORDDELAY;
+						}
+
+						// Grab next character, set state to inter-character delay
+						cur_msg_p++;
+
+						// If we read a NULL from the announce buffer, set cur_character to NULL,
+						// otherwise set to correct morse character
+						if((*cur_msg_p) == '\0')
+							cur_character = '\0';
+						else
+							cur_character = pgm_read_byte(&morsechar[(*cur_msg_p) - MORSE_CHAR_START]);
+					}
+					else
+					{
+						// Mask off MSb, set cur_element
+						if((cur_character & 0b10000000) == 0b10000000)
+						{
+							// Set to output glyph 1 if a dah
+							eeprom_read_block((void*)&temp_buffer, (const void*)&ee_glyph_1, GLYPH_SIZE - 1);
+						}
+						else
+						{
+							// Set to output glyph 2 if a dit
+							eeprom_read_block((void*)&temp_buffer, (const void*)&ee_glyph_2, GLYPH_SIZE - 1);
+						}
+
+						cur_glyph_p = temp_buffer;
+						cur_hell_col = 0;
+						cur_hell_char = *cur_glyph_p;
+						cur_state_end = cur_timer + dit_length;
+						cur_state = STATE_HELLCOL;
+
+						// Shift left to get next element
+						cur_character = cur_character << 1;
+					}
+				}
+				else
+				{
+					// Reload the message buffer and set buffer pointer back to beginning
+					if(cur_buffer == BUFFER_1)
+						eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+					else if(cur_buffer == BUFFER_2)
+						eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
+					cur_msg_p = msg_buffer;
+					cur_character = '\0';
+
+					if(msg_delay == 0)
+					{
+						// If a constantly repeating message, put a word delay at the end of message
+						cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+						cur_state = STATE_WORDDELAY;
+					}
+					else
+					{
+						// Otherwise, set the message delay time
+						if(msg_delay_end < cur_timer + (dit_length * MULT_HELL_WORDDELAY))
+							cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+						else
+							cur_state_end = msg_delay_end;
+
+						cur_state = STATE_MSGDELAY;
+					}
+				}
+
+				break;
+
+			case STATE_HELLCOL:
+				OCR1B = hell_tune[cur_hell_row];
+				if((cur_hell_char & (1 << cur_hell_row)) != 0)
+				{
+					// Pixel on
+					KEY_PORT |= _BV(KEY);
+				}
+				else
+				{
+					// Pixel off
+					KEY_PORT &= ~(_BV(KEY));
+				}
+
+				if(cur_timer > cur_state_end)
+				{
+					cur_hell_row++;
+					if(cur_hell_row > HELL_ROWS)
+					{
+						cur_hell_row = 0;
+						cur_state_end = cur_timer + dit_length;
+						cur_state = STATE_HELLIDLE;
+					}
+					else
+					{
+						cur_state_end = cur_timer + dit_length;
+						cur_state = STATE_HELLCOL;
+					}
+				}
+				break;
+
+			case STATE_HELLIDLE:
+				// Transmitter off
+				KEY_PORT &= ~(_BV(KEY));
+				OCR1B = 0;
+
+
+				if(cur_hell_char == 0x80)
+				{
+					cur_hell_col = 0;
+					cur_state_end = cur_timer + (dit_length * MULT_HELL_CHARDELAY);
+					cur_state = STATE_CHARDELAY;
+				}
+				else if(cur_timer > cur_state_end)
+				{
+					cur_glyph_p++;
+					cur_state_end = cur_timer + dit_length;
+					cur_state = STATE_HELLCOL;
+				}
+
+				cur_hell_char = *cur_glyph_p;
+				break;
+
+			case STATE_WORDDELAY:
+			case STATE_CHARDELAY:
+				// Transmitter off
+				KEY_PORT &= ~(_BV(KEY));
+
+				OCR1B = 0;
+
+				if(cur_timer > cur_state_end)
+					cur_state = STATE_IDLE;
+				break;
+			default:
+				cur_state = STATE_IDLE;
+				break;
+			}
+			break;
+
+		case MODE_WSPR:
+			switch(cur_state)
+			{
+			case STATE_IDLE:
+				// Transmitter off
+				KEY_PORT &= ~(_BV(KEY));
+
+				if(cur_timer > cur_state_end)
+				{
+					cur_state_end = cur_timer + WSPR_SYMBOL_LENGTH;
+					cur_state = STATE_WSPR;
+				}
+				break;
+
+			case STATE_WSPR:
+				// Transmitter on
+				KEY_PORT |= _BV(KEY);
+
+				// Transmit the WSPR symbol
+				switch(*cur_msg_p)
+				{
+				case '0':
+					OCR1B = hell_tune[6];
+					break;
+
+				case '1':
+					OCR1B = hell_tune[5];
+					break;
+
+				case '2':
+					OCR1B = hell_tune[4];
+					break;
+
+				case '3':
+					OCR1B = hell_tune[3];
+					break;
+
+				default:
+					break;
+				}
+
+				if(cur_timer > cur_state_end)
+				{
+					// Get the next symbol from the buffer
+					cur_msg_p++;
+
+					// If at end of buffer, reset and go into message delay
+					if((*cur_msg_p) == '\0')
+					{
+						eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
+						cur_msg_p = msg_buffer;
+
+						cur_state_end = UINT32_MAX;
+						cur_state = STATE_IDLE;
+					}
+					else
+					{
+						cur_state_end = cur_timer + WSPR_SYMBOL_LENGTH;
+						cur_state = STATE_WSPR;
+					}
+				}
+				break;
+			default:
+				cur_state = STATE_IDLE;
+				break;
+			}
+			break;
+
 		case MODE_CAL:
 			switch(cur_state)
 			{
