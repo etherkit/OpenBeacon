@@ -76,7 +76,7 @@
 
 #define MULT_DAH				3			// DAH is 3x a DIT
 #define MULT_WORDDELAY			7			// Space between words is 7 dits
-#define MULT_HELL_WORDDELAY		500
+#define MULT_HELL_WORDDELAY		200
 #define MULT_HELL_CHARDELAY		20
 #define MULT_HELL_GLYPHDELAY	60
 #define HELL_ROW_RPT			3
@@ -1074,8 +1074,19 @@ int main(void)
 					if(cur_hell_row > HELL_ROWS)
 					{
 						cur_hell_row = 0;
-						cur_state_end = cur_timer + dit_length;
-						cur_state = STATE_HELLIDLE;
+						cur_glyph_p++;
+						cur_hell_char = *cur_glyph_p;
+						if(cur_hell_char == 0x80)
+						{
+							cur_hell_col = 0;
+							cur_state_end = cur_timer + (dit_length * MULT_HELL_CHARDELAY);
+							cur_state = STATE_CHARDELAY;
+						}
+						else
+						{
+							cur_state_end = cur_timer + dit_length;
+							cur_state = STATE_HELLCOL;
+						}
 					}
 					else
 					{
@@ -1083,28 +1094,6 @@ int main(void)
 						cur_state = STATE_HELLCOL;
 					}
 				}
-				break;
-
-			case STATE_HELLIDLE:
-				// Transmitter off
-				KEY_PORT &= ~(_BV(KEY));
-				OCR1B = 0;
-
-
-				if(cur_hell_char == 0x80)
-				{
-					cur_hell_col = 0;
-					cur_state_end = cur_timer + (dit_length * MULT_HELL_CHARDELAY);
-					cur_state = STATE_CHARDELAY;
-				}
-				else if(cur_timer > cur_state_end)
-				{
-					cur_glyph_p++;
-					cur_state_end = cur_timer + dit_length;
-					cur_state = STATE_HELLCOL;
-				}
-
-				cur_hell_char = *cur_glyph_p;
 				break;
 
 			case STATE_WORDDELAY:

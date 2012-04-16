@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 07 Apr 2012 05:12:35 PM PDT
+EESchema Schematic File Version 2  date Sat 14 Apr 2012 05:38:14 PM PDT
 LIBS:NT7S
 LIBS:power
 LIBS:device
@@ -37,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "OpenBeacon"
-Date "7 apr 2012"
+Date "15 apr 2012"
 Rev "A"
 Comp "Etherkit"
 Comment1 ""
@@ -904,7 +904,7 @@ L R R13
 U 1 1 4F1CA9AC
 P 5600 2680
 F 0 "R13" H 5740 2735 50  0000 C CNN
-F 1 "47" H 5715 2650 50  0000 C CNN
+F 1 "10" H 5715 2650 50  0000 C CNN
 	1    5600 2680
 	1    0    0    -1  
 $EndComp
@@ -913,7 +913,7 @@ L R R14
 U 1 1 4F1CA9A9
 P 5600 4030
 F 0 "R14" H 5455 4100 50  0000 C CNN
-F 1 "10" H 5450 4015 50  0000 C CNN
+F 1 "27" H 5450 4015 50  0000 C CNN
 	1    5600 4030
 	1    0    0    -1  
 $EndComp
@@ -1029,8 +1029,8 @@ $Comp
 L C C12
 U 1 1 4F1CA46B
 P 5090 3175
-F 0 "C12" V 4890 3200 50  0000 C CNN
-F 1 "100n" V 4965 3185 50  0000 C CNN
+F 0 "C12" V 4940 3175 50  0000 C CNN
+F 1 "100n" V 4965 3185 50  0001 C CNN
 	1    5090 3175
 	0    1    1    0   
 $EndComp
@@ -1048,7 +1048,7 @@ L R R8
 U 1 1 4F1CA461
 P 4830 3365
 F 0 "R8" H 4960 3400 50  0000 C CNN
-F 1 "2.2k" H 4960 3320 50  0000 C CNN
+F 1 "2.2k" H 4985 3320 50  0000 C CNN
 	1    4830 3365
 	1    0    0    -1  
 $EndComp

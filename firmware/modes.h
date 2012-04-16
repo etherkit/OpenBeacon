@@ -72,6 +72,6 @@ const char mode_desc[MODE_COUNT][100] =	   {"Dual Frequency CW - 3 second dits",
 
 // Array of speeds for the modes, indexed to enum MODE
 // Speeds are in WPM * 1000
-const uint16_t dit_speed[MODE_COUNT] = {400, 200, 120, 10, 400, 200, 120, 10, 5000, 5000, 1750, 5000, 10000};
+const uint16_t dit_speed[MODE_COUNT] = {400, 200, 120, 10, 400, 200, 120, 10, 5000, 3500, 1750, 4000, 10000};
 
 #endif /* MODES_H_ */

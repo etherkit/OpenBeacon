@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 07 Apr 2012 05:53:33 PM PDT
+EESchema Schematic File Version 2  date Mon 16 Apr 2012 01:52:54 PM PDT
 LIBS:NT7S
 LIBS:power
 LIBS:device
@@ -37,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "OpenBeacon"
-Date "8 apr 2012"
+Date "16 apr 2012"
 Rev "A"
 Comp "Etherkit"
 Comment1 ""
@@ -466,7 +466,7 @@ L R R1
 U 1 1 4F205BFF
 P 2345 6170
 F 0 "R1" V 2165 6155 50  0000 C CNN
-F 1 "100k" V 2240 6135 50  0000 C CNN
+F 1 "150k" V 2240 6135 50  0000 C CNN
 	1    2345 6170
 	0    1    1    0   
 $EndComp
@@ -475,7 +475,7 @@ L R R2
 U 1 1 4F205BFB
 P 2750 6170
 F 0 "R2" V 2570 6155 50  0000 C CNN
-F 1 "100k" V 2650 6135 50  0000 C CNN
+F 1 "150k" V 2650 6135 50  0000 C CNN
 	1    2750 6170
 	0    1    1    0   
 $EndComp
@@ -484,7 +484,7 @@ L R R3
 U 1 1 4F205BF3
 P 3170 6170
 F 0 "R3" V 2990 6170 50  0000 C CNN
-F 1 "100k" V 3070 6150 50  0000 C CNN
+F 1 "150k" V 3070 6150 50  0000 C CNN
 	1    3170 6170
 	0    1    1    0   
 $EndComp
@@ -904,7 +904,7 @@ L R R13
 U 1 1 4F1CA9AC
 P 5600 2680
 F 0 "R13" H 5740 2735 50  0000 C CNN
-F 1 "47" H 5715 2650 50  0000 C CNN
+F 1 "10" H 5715 2650 50  0000 C CNN
 	1    5600 2680
 	1    0    0    -1  
 $EndComp
@@ -913,7 +913,7 @@ L R R14
 U 1 1 4F1CA9A9
 P 5600 4030
 F 0 "R14" H 5455 4100 50  0000 C CNN
-F 1 "10" H 5450 4015 50  0000 C CNN
+F 1 "27" H 5450 4015 50  0000 C CNN
 	1    5600 4030
 	1    0    0    -1  
 $EndComp
@@ -1048,7 +1048,7 @@ L R R8
 U 1 1 4F1CA461
 P 4830 3365
 F 0 "R8" H 4960 3400 50  0000 C CNN
-F 1 "2.2k" H 4960 3320 50  0000 C CNN
+F 1 "2.2k" H 4985 3320 50  0000 C CNN
 	1    4830 3365
 	1    0    0    -1  
 $EndComp

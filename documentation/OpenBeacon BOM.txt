@@ -1,11 +1,11 @@
 OpenBeacon BOM
 Etherkit
-7 Apr 2012
+16 Apr 2012
 
-| Part                            | Qty  | Ref                               | P/N
+| Part (marking)                  | Qty  | Ref                               | P/N
 ======================================================================================================
 Capacitors
-| 100n                              12    C1, C2, C9, C10, C11, C13,
+| 100n (104)                        12    C1, C2, C9, C10, C11, C13,
                                           C14, C15, C16, C17, C18, C19       
 Diodes
 | Green LED (5 mm)                  1     D2        
@@ -17,7 +17,7 @@ Connectors
 | BNC                               1     J4                                   Amphenol 31-5431-10RFX       
 | AVR-ISP-6                         1     J3                                   Molex 70287-1001      
 | +12VDC                            1     J1                                   Kobiconn 163-762-E    
-| USB Micro-B Jack                  1     J2                                   FCI 10103594-0001LF
+| USB B Jack                        1     J2                                   FCI 61729-1011BLF
 
 Transistors
 | 2N4401                            2     Q1, Q2        
@@ -28,17 +28,18 @@ Transistors
 Resistors & Trimmers
 | 1 (brown-black-gold)              1     R25  
 | 1.5k (brown-green-red)            1     R15       
-| 10 (brown-black-black)            2     R14, R21       
-| 100k (brown-black-yellow)         4     R1, R2, R3, R24           
+| 10 (brown-black-black)            2     R13, R21       
+| 100k (brown-black-yellow)         1     R24           
 | 10k (brown-black-orange)          4     R5, R6, R9, R12        
-| 1k (brown-black-red)              2     R16, R18       
+| 1k (brown-black-red)              2     R16, R18  
+| 150k (brown-green-yellow)         3     R1, R2 R3     
 | 22 (red-red-black)                1     R19       
 | 2.2k (red-red-red)                1     R8        
 | 22k (red-red-orange)              2     R22, R23
+| 27 (red-purple-black)             1     R14
 | 330 (orange-orange-brown)         1     R4
-| 4.7 (yellow-purple-gold)          1     R25
 | 4.7k (yellow-purple-red)          1     R17        
-| 47 (yellow-purple-black)          2     R7, R13        
+| 47 (yellow-purple-black)          1     R7        
 | 68 (blue-grey-black)              2     R10, R11   
 | 470 trim                          1     R20                                  Bournes 3319P-1-471 
 
@@ -53,8 +54,11 @@ ICs
 | ATTINY85-20                       1     U1 
 
 Frequency Dependent Components
-            |C3   |C4      |C5   |C6      |C7/C8   |C12  |C20/C24 |C22  |C21/C23 |L1/L2 |L3/L4
-30 Meters   |10   |3.3 C0G |30   |33 C0G  |47 C0G  |22   |330     |560  |N/A     |10 u  |1.1 u T37-2 16T (red core)
+            |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
+30 Meters   |10 (blue)  |3.3 C0G (3.3) |30 (green)  |33 C0G (33) |47 C0G (47)   |22 (22)    |330 (331)    
+
+            |C22        |C21/C23 |L1/L2                               |L3/L4                       |X1
+30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, blue body) |1.1 u T37-2 16T (red core)  |10.140 MHz
 
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4
