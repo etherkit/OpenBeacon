@@ -55,10 +55,10 @@ ICs
 
 Frequency Dependent Components
             |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
-30 Meters   |10 (blue)  |3.3 C0G (3.3) |30 (green)  |33 C0G (33) |47 C0G (47)   |22 (22)    |330 (331)    
+30 Meters   |10 (blue)  |3.3 C0G (3.3) |30 (green)  |N/A         |47 C0G (47)   |22 (22)    |330 (331)    
 
-            |C22        |C21/C23 |L1/L2                               |L3/L4                       |X1
-30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, blue body) |1.1 u T37-2 16T (red core)  |10.140 MHz
+            |C22        |C21/C23 |L1/L2                                |L3/L4                       |X1
+30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)  |10.140 MHz
 
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4
