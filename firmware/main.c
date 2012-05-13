@@ -202,9 +202,12 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
         cur_hell_col = 0;
 
         // Reset WPM
-        wpm = dit_speed[cur_mode];
+        if(cur_mode == MODE_CW)
+        	wpm = eeprom_read_word(&ee_wpm);
+        else
+        	wpm = dit_speed[cur_mode];
+
         set_wpm(wpm);
-        eeprom_write_word(&ee_wpm, wpm);
 
         // Put back in IDLE state
         cur_state_end = cur_timer;
@@ -485,9 +488,11 @@ void init_tx(void)
 		cur_hell_col = 0;
 
 		// Reset WPM
-		wpm = dit_speed[cur_mode];
+		if(cur_mode == MODE_CW)
+			wpm = eeprom_read_word(&ee_wpm);
+		else
+			wpm = dit_speed[cur_mode];
 		set_wpm(wpm);
-		eeprom_write_word(&ee_wpm, wpm);
 
 		// Reset to IDLE state
 		cur_state_end = cur_timer;
@@ -598,8 +603,15 @@ int main(void)
 	// Initialize states
 	cur_mode = eeprom_read_byte(&ee_mode);
 	cur_state = STATE_IDLE;
-	wpm = eeprom_read_word(&ee_wpm);
+
+	/*
+	if(cur_mode == MODE_CW)
+		wpm = eeprom_read_word(&ee_wpm);
+	else
+		wpm = dit_speed[cur_mode];
 	set_wpm(wpm);
+	*/
+
 	cur_buffer = eeprom_read_byte(&ee_buffer);
 	dfcw_offset = eeprom_read_byte(&ee_dfcw_offset);
 	if(cur_buffer == BUFFER_1)

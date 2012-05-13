@@ -1,8 +1,8 @@
 OpenBeacon BOM
 Etherkit
-16 Apr 2012
+10 May 2012
 
-| Part (marking)                  | Qty  | Ref                               | P/N
+| Part (marking)                  | Qty  | Ref                            | P/N
 ======================================================================================================
 Capacitors
 | 100n (104)                        12    C1, C2, C9, C10, C11, C13,
@@ -14,10 +14,10 @@ Diodes
 | 1N5227B (3.6V zener)              2     D3, D5        
 
 Connectors
-| BNC                               1     J4                                   Amphenol 31-5431-10RFX       
-| AVR-ISP-6                         1     J3                                   Molex 70287-1001      
-| +12VDC                            1     J1                                   Kobiconn 163-762-E    
-| USB B Jack                        1     J2                                   FCI 61729-1011BLF
+| BNC                               1     J4                                Amphenol 31-5431-10RFX       
+| AVR-ISP-6                         1     J3                                Molex 70287-1001      
+| +12VDC                            1     J1                                Kobiconn 163-762-E    
+| USB B Jack                        1     J2                                FCI 61729-1011BLF
 
 Transistors
 | 2N4401                            2     Q1, Q2        
@@ -25,26 +25,25 @@ Transistors
 | 2N7000                            1     Q5        
 | BD139-16                          1     Q3        
 
-Resistors & Trimmers
-| 1 (brown-black-gold)              1     R25  
-| 1.5k (brown-green-red)            1     R15       
-| 10 (brown-black-black)            2     R13, R21       
-| 100k (brown-black-yellow)         1     R24           
-| 10k (brown-black-orange)          4     R5, R6, R9, R12        
-| 1k (brown-black-red)              2     R16, R18  
-| 150k (brown-green-yellow)         3     R1, R2 R3     
-| 22 (red-red-black)                1     R19       
-| 2.2k (red-red-red)                1     R8        
-| 22k (red-red-orange)              2     R22, R23
-| 27 (red-purple-black)             1     R14
-| 330 (orange-orange-brown)         1     R4
-| 4.7k (yellow-purple-red)          1     R17        
-| 47 (yellow-purple-black)          1     R7        
-| 68 (blue-grey-black)              2     R10, R11   
-| 470 trim                          1     R20                                  Bournes 3319P-1-471 
+Resistors & Trimmers (0.25 W, unless specified, tolerance band omitted below)
+| 1 (brown-black-black-silver)      1     R25  
+| 1.5k (brown-green-black-brown)    1     R15       
+| 10 (brown-black-black-gold)       2     R13, R21       
+| 100k (brown-black-black-orange)   1     R24           
+| 10k (brown-black-black-red)       4     R5, R6, R9, R12        
+| 1k (brown-black-black-brown)      2     R16, R18  
+| 150k (brown-green-black-orange)   3     R1, R2, R3     
+| 22 (red-red-black-gold)           2     R14, R19       
+| 2.2k (red-red-black-brown)        1     R8        
+| 22k (red-red-black-red)           2     R22, R23
+| 330 (orange-orange-black-black)   1     R4
+| 4.7k (yellow-purple-black-brown)  1     R17        
+| 47 (yellow-purple-black-gold)     1     R7        
+| 68 (blue-grey-black-gold)         2     R10, R11   
+| 470 trim                          1     R20                               Bournes 3319P-1-471 
 
 Buttons
-| Pushbutton                        1     S1                                   TE 1571010-1
+| Pushbutton                        1     S1                                TE 1571010-1
 
 Transformers
 | FT37-43 10T BIFILAR               1     T1        
@@ -55,7 +54,7 @@ ICs
 
 Frequency Dependent Components
             |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
-30 Meters   |10 (blue)  |3.3 C0G (3.3) |30 (green)  |N/A         |47 C0G (47)   |22 (22)    |330 (331)    
+30 Meters   |10 (blue)  |3.3 C0G (3R3) |30 (green)  |N/A         |47 C0G (47)   |47 (47)    |330 (331)    
 
             |C22        |C21/C23 |L1/L2                                |L3/L4                       |X1
 30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)  |10.140 MHz
@@ -63,5 +62,5 @@ Frequency Dependent Components
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4
 | Green Magnet Wire, 28 AWG (feet)  1
-| DIP-8 socket                      1                                          FCI DILB8P-223TLF
+| DIP-8 socket                      1                                       FCI DILB8P-223TLF
 | PCB
