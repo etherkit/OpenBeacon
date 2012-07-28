@@ -1,6 +1,6 @@
 OpenBeacon BOM
 Etherkit
-10 May 2012
+20 Jul 2012
 
 | Part (marking)                  | Qty  | Ref                            | P/N
 ======================================================================================================
@@ -53,11 +53,17 @@ ICs
 | ATTINY85-20                       1     U1 
 
 Frequency Dependent Components
+            |R8
+30 Meters   |2.2k (red-red-black-brown)
+10 Meters   |470 (yellow-purple-black-black)
+
             |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
 30 Meters   |10 (blue)  |3.3 C0G (3R3) |30 (green)  |N/A         |47 C0G (47)   |47 (47)    |330 (331)    
+10 Meters   |10 (blue)  |2.2 C0G (2.2) |20 (red)    |N/A         |4.7 C0G (4.7) |22 (22)    |180 (181)
 
-            |C22        |C21/C23 |L1/L2                                |L3/L4                       |X1
-30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)  |10.140 MHz
+            |C22        |C21/C23 |L1/L2                                |L3/L4                         |X1
+30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)    |10.140 MHz
+10 Meters   |270 (271)  |N/A     |1 u (brown-black-gold, green body)   |330 n T37-6 10T (yellow core) |28.000 MHz
 
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4

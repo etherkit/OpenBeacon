@@ -47,7 +47,6 @@
 #define MAX_WPM					50
 #define MAX_NUM_GLYPH			2
 
-enum MODE {MODE_DFCW3, MODE_DFCW6, MODE_DFCW10, MODE_DFCW120, MODE_QRSS3, MODE_QRSS6, MODE_QRSS10, MODE_QRSS120, MODE_CW, MODE_HELL, MODE_WSPR, MODE_GLYPHCODE, MODE_CAL};
 
 #if OPENBEACON_CLIENT
 
@@ -68,10 +67,15 @@ const char mode_desc[MODE_COUNT][100] =	   {"Dual Frequency CW - 3 second dits",
 											"WSPR (experimental, see documentation)",
 											"Glyphcode",
 											"Calibration"};
-#endif
+#else // Firmware only
+#include <avr/pgmspace.h>
+
+enum MODE {MODE_DFCW3, MODE_DFCW6, MODE_DFCW10, MODE_DFCW120, MODE_QRSS3, MODE_QRSS6, MODE_QRSS10, MODE_QRSS120, MODE_CW, MODE_HELL, MODE_WSPR, MODE_GLYPHCODE, MODE_CAL};
 
 // Array of speeds for the modes, indexed to enum MODE
 // Speeds are in WPM * 1000
-const uint16_t dit_speed[MODE_COUNT] = {400, 200, 120, 10, 400, 200, 120, 10, 5000, 3500, 1750, 4000, 10000};
+const uint16_t dit_speed[MODE_COUNT] PROGMEM = {400, 200, 120, 10, 400, 200, 120, 10, 5000, 3500, 1750, 4000, 10000};
+
+#endif
 
 #endif /* MODES_H_ */
