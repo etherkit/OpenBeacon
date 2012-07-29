@@ -816,8 +816,11 @@ int main(void)
 						}
 
 						// Do a CW ID
-						init_cwid();
-						next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
+						if(cur_mode != MODE_CW && !cwid)
+						{
+							init_cwid();
+							next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
+						}
 					}
 				}
 
@@ -1142,6 +1145,10 @@ int main(void)
 
 						cur_state = STATE_MSGDELAY;
 					}
+
+					// Do a CW ID
+					init_cwid();
+					next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
 				}
 
 				break;
