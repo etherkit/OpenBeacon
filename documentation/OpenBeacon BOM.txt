@@ -1,6 +1,6 @@
 OpenBeacon BOM
 Etherkit
-10 May 2012
+15 Aug 2012
 
 | Part (marking)                  | Qty  | Ref                            | P/N
 ======================================================================================================
@@ -34,7 +34,6 @@ Resistors & Trimmers (0.25 W, unless specified, tolerance band omitted below)
 | 1k (brown-black-black-brown)      2     R16, R18  
 | 150k (brown-green-black-orange)   3     R1, R2, R3     
 | 22 (red-red-black-gold)           2     R14, R19       
-| 2.2k (red-red-black-brown)        1     R8        
 | 22k (red-red-black-red)           2     R22, R23
 | 330 (orange-orange-black-black)   1     R4
 | 4.7k (yellow-purple-black-brown)  1     R17        
@@ -53,11 +52,29 @@ ICs
 | ATTINY85-20                       1     U1 
 
 Frequency Dependent Components
-            |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
-30 Meters   |10 (blue)  |3.3 C0G (3R3) |30 (green)  |N/A         |47 C0G (47)   |47 (47)    |330 (331)    
+            |R8
+80 Meters   |2.2k (red-red-black-brown)
+40 Meters   |2.2k (red-red-black-brown)
+30 Meters   |2.2k (red-red-black-brown)
+10 Meters   |470 (yellow-purple-black-black)
 
-            |C22        |C21/C23 |L1/L2                                |L3/L4                       |X1
-30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)  |10.140 MHz
+            |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
+80 Meters   |20 (red)   |15 C0G (15)   |50 (yellow) |N/A         |150 C0G (151) |68 (68)    |820 (821)
+40 Meters   |20 (red)   |10 C0G (10)   |30 (green)  |N/A         |100 C0G (101) |68 (68)    |390 (391)
+30 Meters   |10 (blue)  |3.3 C0G (3R3) |30 (green)  |N/A         |47 C0G (47)   |47 (47)    |330 (331)    
+10 Meters   |10 (blue)  |2.2 C0G (2.2) |20 (red)    |N/A         |4.7 C0G (4.7) |22 (22)    |180 (181)
+
+            |C22        |C21/C23 |L1/L2                                |L3/L4                         
+80 Meters   |1500 (152) |N/A     |22 u (red-red-black, green body)     |3.13 u T37-2 28T (red core)   
+40 Meters   |680 (681)  |N/A     |10 u (brown-black-black, green body) |1.46 u T37-2 18T (red core)   
+30 Meters   |560 (561)  |N/A     |10 u (brown-black-black, green body) |1.1 u T37-2 16T (red core)    
+10 Meters   |270 (271)  |N/A     |1 u (brown-black-gold, green body)   |330 n T37-6 10T (yellow core) 
+
+            |X1
+80 Meters   |3.582 MHz
+40 Meters   |7.040 MHz
+30 Meters   |10.140 MHz
+10 Meters   |28.000 MHz
 
 Miscellaneous
 | Red Magnet Wire, 28 AWG (feet)    4
