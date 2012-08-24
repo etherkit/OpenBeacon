@@ -494,7 +494,6 @@ void init_tx(void)
 			cur_hell_col = 0;
 
 			// Reset WPM
-
 			if(cur_mode == MODE_CW)
 				wpm = eeprom_read_word(&ee_wpm);
 			else
@@ -539,7 +538,7 @@ void reset_buffer(void)
 	memset(msg_buffer, '\0', WSPR_BUFFER_SIZE);
 	if(cur_buffer == BUFFER_1)
 		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
-	else if(cur_buffer == BUFFER_2)
+	else
 		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
 	cur_msg_p = msg_buffer;
 	cur_character = '\0';
@@ -553,8 +552,8 @@ void init_cwid(void)
 	prev_buffer = cur_buffer;
 	prev_character = cur_character;
 	prev_msg_p = cur_msg_p;
-	prev_state_end = cur_state_end;
-	prev_state = cur_state;
+	//prev_state_end = cur_state_end;
+	//prev_state = cur_state;
 
 	cur_mode = MODE_CW;
 	wpm = CWID_WPM;
@@ -685,7 +684,10 @@ int main(void)
 
 		// Handle CW ID if one hasn't been triggered in 10 minutes
 		if(cur_timer > next_cwid && !cwid && (cur_mode != MODE_WSPR || cur_mode != MODE_CW))
+		{
 			init_cwid();
+			next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
+		}
 
 		// State machine
 		switch(cur_mode)
@@ -709,10 +711,10 @@ int main(void)
 				{
 					msg_delay_end = cur_timer + get_msg_delay(msg_delay);
 					cur_state_end = cur_timer + (dit_length * MULT_WORDDELAY);
-					if(cur_mode != MODE_CW)
+					//if(cur_mode != MODE_CW)
 						cur_state = STATE_PREAMBLE;
-					else
-						cur_state = STATE_IDLE;
+					//else
+						//cur_state = STATE_IDLE;
 					break;
 				}
 
@@ -783,7 +785,8 @@ int main(void)
 						set_wpm(wpm);
 						cur_character = prev_character;
 						cur_buffer = prev_buffer;
-						cur_state_end = prev_state_end;
+						//cur_state_end = prev_state_end;
+						memset(msg_buffer, '\0', WSPR_BUFFER_SIZE);
 						if(cur_buffer == BUFFER_1)
 							eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
 						else if(cur_buffer == BUFFER_2)
@@ -791,7 +794,8 @@ int main(void)
 						cur_msg_p = prev_msg_p;
 						next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
 						cwid = FALSE;
-						cur_state = prev_state;
+						//cur_state = prev_state;
+						cur_state = STATE_IDLE;
 					}
 					else
 					{
@@ -815,12 +819,14 @@ int main(void)
 							cur_state = STATE_MSGDELAY;
 						}
 
+
 						// Do a CW ID
-						if(cur_mode != MODE_CW && !cwid)
+						if(cur_mode != MODE_CW)
 						{
 							init_cwid();
 							next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
 						}
+
 					}
 				}
 
