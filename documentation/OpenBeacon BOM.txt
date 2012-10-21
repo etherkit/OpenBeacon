@@ -16,7 +16,7 @@ Diodes
 Connectors
 | BNC                               1     J4                                Amphenol 31-5431-10RFX       
 | AVR-ISP-6                         1     J3                                Molex 70287-1001      
-| +12VDC                            1     J1                                Kobiconn 163-762-E    
+| +12VDC                            1     J1                                Kobiconn 163-7620E-E    
 | USB B Jack                        1     J2                                FCI 61729-1011BLF
 
 Transistors
@@ -59,7 +59,7 @@ Frequency Dependent Components
 10 Meters   |470 (yellow-purple-black-black)
 
             |C3         |C4            |C5          |C6          |C7/C8         |C12        |C20/C24      
-80 Meters   |20 (red)   |15 C0G (15)   |50 (yellow) |N/A         |150 C0G (151) |68 (68)    |820 (821)
+80 Meters   |20 (red)   |15 C0G (15)   |45 (yellow) |N/A         |150 C0G (151) |68 (68)    |820 (821)
 40 Meters   |20 (red)   |10 C0G (10)   |30 (green)  |N/A         |100 C0G (101) |68 (68)    |390 (391)
 30 Meters   |10 (blue)  |3.3 C0G (3R3) |30 (green)  |N/A         |47 C0G (47)   |47 (47)    |330 (331)    
 10 Meters   |10 (blue)  |2.2 C0G (2.2) |20 (red)    |N/A         |4.7 C0G (4.7) |22 (22)    |180 (181)

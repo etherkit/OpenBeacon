@@ -186,41 +186,6 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 
         init_tx();
 
-        /*
-        // Reset message buffer
-        if(cur_mode == MODE_WSPR)
-        {
-        	//wspr_buffer
-        	eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
-			cur_msg_p = msg_buffer;
-			cur_character = '\0';
-        }
-        else
-        {
-			eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
-			cur_msg_p = msg_buffer;
-			cur_character = '\0';
-        }
-
-        // If in message delay mode, set the delay
-        msg_delay_end = cur_timer + get_msg_delay(msg_delay);
-
-		// Reset Hell index
-        cur_hell_row = 0;
-        cur_hell_col = 0;
-
-        // Reset WPM
-        if(cur_mode == MODE_CW)
-        	wpm = eeprom_read_word(&ee_wpm);
-        else
-        	wpm = pgm_read_word(&dit_speed[cur_mode]);
-
-        set_wpm(wpm);
-
-        // Put back in IDLE state
-        cur_state_end = cur_timer;
-        cur_state = STATE_IDLE;*/
-
         return 0;
         break;
 
@@ -231,23 +196,32 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
         break;
 
 	case CUSTOM_RQ_SET_MSG_1:
+	case CUSTOM_RQ_SET_MSG_2:
         currentPosition = 0;					// initialize position index
         bytesRemaining = rq->wLength.word;		// store the amount of data requested
         if(bytesRemaining > sizeof(temp_buffer))	// limit to buffer size
             bytesRemaining = sizeof(temp_buffer);
-        write_to = USB_BUFFER_1;
+        if(rq->bRequest == CUSTOM_RQ_SET_MSG_1)
+        	write_to = USB_BUFFER_1;
+        else// if(rq->bRequest == CUSTOM_RQ_SET_MSG_2)
+        	write_to = USB_BUFFER_2;
         return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
     	break;
 
 	case CUSTOM_RQ_GET_MSG_1:
+	case CUSTOM_RQ_GET_MSG_2:
     	len = MSG_BUFFER_SIZE;					// we return up to 64 bytes
 		if(len > rq->wLength.word)				// if the host requests less than we have
-			len = rq->wLength.word;				// return only the amount requested
-		eeprom_read_block((void*)&temp_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+			len = rq->wLength.word;
+		if(rq->bRequest == CUSTOM_RQ_GET_MSG_1)// return only the amount requested
+			eeprom_read_block((void*)&temp_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
+		else// if(rq->bRequest == CUSTOM_RQ_GET_MSG_2)
+			eeprom_read_block((void*)&temp_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
 		usbMsgPtr = (uchar *)temp_buffer;		// tell driver where the buffer starts
 		return len;                         	// tell driver how many bytes to send
     	break;
 
+    	/*
 	case CUSTOM_RQ_SET_MSG_2:
         currentPosition = 0;					// initialize position index
         bytesRemaining = rq->wLength.word;		// store the amount of data requested
@@ -256,7 +230,9 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
         write_to = USB_BUFFER_2;
         return USB_NO_MSG;						// tell driver to use usbFunctionWrite()
     	break;
+    	*/
 
+    	/*
 	case CUSTOM_RQ_GET_MSG_2:
     	len = MSG_BUFFER_SIZE;					// we return up to 64 bytes
 		if(len > rq->wLength.word)				// if the host requests less than we have
@@ -265,6 +241,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 		usbMsgPtr = (uchar *)temp_buffer;		// tell driver where the buffer starts
 		return len;                         	// tell driver how many bytes to send
     	break;
+    	*/
 
 	case CUSTOM_RQ_SET_WPM:
     	wpm = rq->wValue.bytes[0] * 1000;
@@ -299,7 +276,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			cur_buffer = BUFFER_1;
 			eeprom_write_byte(&ee_buffer, cur_buffer);
 		}
-		else if(rq->wValue.bytes[0] == 2)
+		else// if(rq->wValue.bytes[0] == 2)
 		{
 			cur_buffer = BUFFER_2;
 			eeprom_write_byte(&ee_buffer, cur_buffer);
@@ -470,41 +447,41 @@ uint32_t get_msg_delay(uint8_t delay_minutes)
 
 void init_tx(void)
 {
-		if(cur_mode == MODE_WSPR)
-		{
-			// Reset the WSPR symbol buffer
-			eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
-			cur_msg_p = msg_buffer;
-			cur_character = '\0';
+	if(cur_mode == MODE_WSPR)
+	{
+		// Reset the WSPR symbol buffer
+		eeprom_read_block((void*)&msg_buffer, (const void*)&ee_wspr_symbols, WSPR_BUFFER_SIZE - 1);
+		cur_msg_p = msg_buffer;
+		cur_character = '\0';
 
-			// Reset to IDLE state
-			cur_state_end = cur_timer;
-			cur_state = STATE_IDLE;
-		}
+		// Reset to IDLE state
+		cur_state_end = cur_timer;
+		cur_state = STATE_IDLE;
+	}
+	else
+	{
+		// Reset the message buffer
+		reset_buffer();
+
+		// If in message delay mode, set the delay
+		msg_delay_end = cur_timer + get_msg_delay(msg_delay);
+
+		// Reset Hell index
+		cur_hell_row = 0;
+		cur_hell_col = 0;
+
+		// Reset WPM
+		if(cur_mode == MODE_CW)
+			wpm = eeprom_read_word(&ee_wpm);
 		else
-		{
-			// Reset the message buffer
-			reset_buffer();
-
-			// If in message delay mode, set the delay
-			msg_delay_end = cur_timer + get_msg_delay(msg_delay);
-
-			// Reset Hell index
-			cur_hell_row = 0;
-			cur_hell_col = 0;
-
-			// Reset WPM
-			if(cur_mode == MODE_CW)
-				wpm = eeprom_read_word(&ee_wpm);
-			else
-				wpm = pgm_read_word(&dit_speed[cur_mode]);
-			set_wpm(wpm);
+			wpm = pgm_read_word(&dit_speed[cur_mode]);
+		set_wpm(wpm);
 
 
-			// Reset to IDLE state
-			cur_state_end = cur_timer;
-			cur_state = STATE_IDLE;
-		}
+		// Reset to IDLE state
+		cur_state_end = cur_timer;
+		cur_state = STATE_IDLE;
+	}
 
 }
 
@@ -552,8 +529,8 @@ void init_cwid(void)
 	prev_buffer = cur_buffer;
 	prev_character = cur_character;
 	prev_msg_p = cur_msg_p;
-	//prev_state_end = cur_state_end;
-	//prev_state = cur_state;
+	prev_state_end = cur_state_end;
+	prev_state = cur_state;
 
 	cur_mode = MODE_CW;
 	wpm = CWID_WPM;
@@ -561,8 +538,11 @@ void init_cwid(void)
 	cur_buffer = BUFFER_2;
 	reset_buffer();
 
-	// Give a DAH delay w/ TX off so we can properly distinguish CW from QRSS
-	cur_state_end = cur_timer + (dit_length * MULT_DAH);
+	// Give a DAH delay (or word delay in HELL mode) w/ TX off so we can properly distinguish CW from QRSS
+	if(prev_mode == MODE_HELL)
+		cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+	else
+		cur_state_end = cur_timer + (dit_length * MULT_DAH);
 	cur_state = STATE_DAHDELAY;
 }
 
@@ -785,17 +765,34 @@ int main(void)
 						set_wpm(wpm);
 						cur_character = prev_character;
 						cur_buffer = prev_buffer;
-						//cur_state_end = prev_state_end;
+						/*
 						memset(msg_buffer, '\0', WSPR_BUFFER_SIZE);
 						if(cur_buffer == BUFFER_1)
 							eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_1, MSG_BUFFER_SIZE - 1);
-						else if(cur_buffer == BUFFER_2)
+						else
 							eeprom_read_block((void*)&msg_buffer, (const void*)&ee_msg_mem_2, MSG_BUFFER_SIZE - 1);
+							*/
+						reset_buffer();
 						cur_msg_p = prev_msg_p;
 						next_cwid = cur_timer + get_msg_delay(CWID_DELAY);
 						cwid = FALSE;
-						//cur_state = prev_state;
-						cur_state = STATE_IDLE;
+
+						cur_state_end = prev_state_end;
+						cur_state = prev_state;
+
+						// If in HELL mode, wait a bit before starting next message
+						/*
+						if(cur_mode == MODE_HELL)
+						{
+							cur_state_end = cur_timer + (dit_length * MULT_HELL_WORDDELAY);
+							cur_state = STATE_WORDDELAY;
+						}
+						else
+						{
+							cur_state_end = prev_state_end;
+							cur_state = prev_state;
+						}
+						*/
 					}
 					else
 					{
