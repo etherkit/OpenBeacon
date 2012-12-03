@@ -49,7 +49,7 @@ Transformers
 
 ICs
 | 78L05                             1     U2        
-| ATTINY85-20                       1     U1 
+| ATTINY85-20PU                     1     U1 
 
 Frequency Dependent Components
             |R8
