@@ -15,7 +15,7 @@ Diodes
 
 Connectors
 | BNC                               1     J4                                Amphenol 31-5431-10RFX       
-| AVR-ISP-6                         1     J3                                Molex 70287-1001      
+| AVR-ISP-6                         1     J3                                3M 929836-09-03      
 | +12VDC                            1     J1                                Kobiconn 163-762-E    
 | USB B Jack                        1     J2                                FCI 61729-1011BLF
 
